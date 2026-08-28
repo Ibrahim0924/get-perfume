@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Semantic palette. Light is the default; dark overrides via data-theme. */
+:root {
+  --bg: #ebe5da;
+  --surface: #f2ede4;
+  --line: #d6cdbd;
+  --fg: #2b2723;
+  --muted: #736b60;
+  --accent: #9c7a3c;
+  --on-accent: #f6f1e8;
+  --rose: #a85a72;
+  --sky: #45719a;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #1c1b18;
+  --surface: #26241f;
+  --line: #3a362f;
+  --fg: #e7e0d3;
+  --muted: #a39b8e;
+  --accent: #c4a46e;
+  --on-accent: #1c1b18;
+  --rose: #d9a3b0;
+  --sky: #93b5d0;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-gold: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-rose: var(--rose);
+  --color-sky: var(--sky);
+
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-bg font-sans text-fg antialiased transition-colors duration-300; }
+  ::selection { background: color-mix(in oklab, var(--color-gold) 40%, transparent); }
+}
+
+.hero-glow {
+  background:
+    radial-gradient(60% 50% at 20% 20%, color-mix(in oklab, var(--color-gold) 14%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 85% 70%, color-mix(in oklab, var(--color-rose) 10%, transparent), transparent 70%);
+}
