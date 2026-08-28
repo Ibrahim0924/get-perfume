@@ -29,7 +29,7 @@ export function FragranceDialog({ fragrance, onClose }: { fragrance: Fragrance |
           <button type="button" onClick={onClose} aria-label="Закрыть" className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-full border border-line text-muted hover:border-gold hover:text-gold">✕</button>
 
           <figure className="flex flex-col gap-3">
-            <div className="flex aspect-[4/5] items-center justify-center rounded-2xl bg-bg p-4">
+            <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-2xl border border-line p-4">
               <FragranceImage src={d?.imageTransparent ?? null} fallbackSrc={d?.image ?? null} alt={fragrance.name} className="max-h-full max-w-full" />
             </div>
             <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">

@@ -55,3 +55,7 @@
     radial-gradient(60% 50% at 20% 20%, color-mix(in oklab, var(--color-gold) 14%, transparent), transparent 70%),
     radial-gradient(40% 40% at 85% 70%, color-mix(in oklab, var(--color-rose) 10%, transparent), transparent 70%);
 }
+
+/* Reference photos from Fragella come with their own light backdrop; a light frame + multiply blend hides it in both themes. */
+.photo-frame { background: #f2ede4; }
+[data-theme='dark'] .photo-frame { background: #e9e3d8; border-color: #4a453d; }

@@ -27,7 +27,7 @@ export function FragranceImage({ src, fallbackSrc, alt, className }: Props) {
       decoding="async"
       referrerPolicy="no-referrer"
       onError={() => setStage((s) => s + 1)}
-      className={cn('object-contain', className)}
+      className={cn('object-contain mix-blend-multiply', className)}
     />
   );
 }
