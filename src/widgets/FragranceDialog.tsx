@@ -92,6 +92,10 @@ export function FragranceDialog({ fragrance, onClose }: { fragrance: Fragrance |
                     ))}
                   </section>
                 )}
+                <p className="mt-7 border-t border-line/60 pt-4 text-[11px] leading-relaxed text-muted">
+                  Характеристики, ноты и аккорды приведены по оригинальной композиции как ориентир. Наш аромат создан по её мотивам —
+                  отдельные оттенки звучания, стойкость и шлейф могут немного отличаться в зависимости от кожи и условий.
+                </p>
               </>
             ) : (
               <p className="mt-6 text-sm text-muted">Подробное описание для этого аромата пока не добавлено.</p>
