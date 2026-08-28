@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { GENDER_LABEL, getDetails, tAccord, tLevel, tLongevity, tOil, tRanked, type Fragrance, type Note } from '@/entities/fragrance';
+import { GENDER_LABEL, getDetails, tAccord, tLevel, tLongevity, tNote, tOil, tRanked, type Fragrance, type Note } from '@/entities/fragrance';
 import { formatPrice } from '@/shared/lib/format';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
 
@@ -81,7 +81,7 @@ export function FragranceDialog({ fragrance, onClose }: { fragrance: Fragrance |
                 ) : d.generalNotes.length > 0 && (
                   <section className="mt-7">
                     <h3 className="mb-3 text-xs font-semibold tracking-[0.2em] text-muted uppercase">Ноты</h3>
-                    <p className="text-sm">{d.generalNotes.join(', ')}</p>
+                    <p className="text-sm">{d.generalNotes.map(tNote).join(', ')}</p>
                   </section>
                 )}
 
@@ -126,7 +126,7 @@ function NoteTier({ title, notes }: { title: string; notes: Note[] }) {
         {notes.map((n) => (
           <li key={n.name} className="flex items-center gap-1.5 rounded-full border border-line bg-bg py-1 pr-3 pl-1 text-xs">
             {n.image ? <img src={n.image} alt="" loading="lazy" referrerPolicy="no-referrer" className="size-5 rounded-full object-cover" /> : <span className="size-5 rounded-full bg-gold/30" />}
-            {n.name}
+            {tNote(n.name)}
           </li>
         ))}
       </ul>

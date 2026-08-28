@@ -1,3 +1,5 @@
+import { NOTES_RU } from './notes-ru';
+
 /** Russian labels for Fragella vocabulary; unknown keys fall back to the English value. */
 const ACCORDS: Record<string, string> = {
   citrus: 'цитрус', fruity: 'фруктовый', 'fresh spicy': 'свежие специи', 'warm spicy': 'тёплые специи', green: 'зелёный', aromatic: 'ароматический',
@@ -29,3 +31,8 @@ export const tLevel = (v: string | null): string | null => (v ? (LEVELS[v] ?? v)
 export const tLongevity = (v: string | null): string | null => (v === 'Moderate' ? LEVELS.Moderate_l! : tLevel(v));
 export const tOil = (v: string | null): string | null => (v ? (OIL[v] ?? v) : null);
 export const tRanked = (name: string): string => RANKED[name.toLowerCase()] ?? name;
+
+export function tNote(name: string): string {
+  const key = name.trim().toLowerCase().replace(/\.$/, '');
+  return NOTES_RU[key] ?? name;
+}
