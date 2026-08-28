@@ -1,8 +1,8 @@
-import type { Brand } from '@/entities/fragrance';
+import type { Brand, Fragrance } from '@/entities/fragrance';
 import { plural } from '@/shared/lib/format';
 import { FragranceRow } from './FragranceRow';
 
-export function BrandView({ brand, onBack }: { brand: Brand; onBack: () => void }) {
+export function BrandView({ brand, onBack, onOpen }: { brand: Brand; onBack: () => void; onOpen: (f: Fragrance) => void }) {
   const count = brand.fragrances.length;
   return (
     <section className="mt-8">
@@ -17,7 +17,7 @@ export function BrandView({ brand, onBack }: { brand: Brand; onBack: () => void 
       </header>
       <ul className="rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
         {brand.fragrances.map((f) => (
-          <FragranceRow key={f.id} fragrance={f} />
+          <FragranceRow key={f.id} fragrance={f} onOpen={onOpen} />
         ))}
       </ul>
     </section>

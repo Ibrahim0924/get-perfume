@@ -1,13 +1,23 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { catalog, type Fragrance } from '@/entities/fragrance';
 import { useCatalogFilters } from '@/features/catalog';
 import { Container } from '@/shared/ui/Container';
 import { BrandGrid } from './BrandGrid';
 import { BrandView } from './BrandView';
 import { CatalogToolbar } from './CatalogToolbar';
+import { FragranceDialog } from './FragranceDialog';
 import { FragranceRow } from './FragranceRow';
 
 export function CatalogSection() {
   const { filters, fragrances, selectedBrand, view, isRefined, actions } = useCatalogFilters();
+
+  // Selected fragrance is mirrored into the URL hash (#f=<id>) so a card can be shared by link.
+  const [selected, setSelected] = useState<Fragrance | null>(() => fragranceFromHash());
+  const closeDialog = useCallback(() => setSelected(null), []);
+  useEffect(() => {
+    const url = selected ? `#f=${selected.id}` : window.location.pathname + window.location.search;
+    history.replaceState(null, '', url);
+  }, [selected]);
 
   const openBrand = useCallback(
     (brandId: string | null) => {
@@ -29,7 +39,7 @@ export function CatalogSection() {
 
       {view === 'brands' && <BrandGrid onSelect={openBrand} />}
 
-      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onBack={() => openBrand(null)} />}
+      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onBack={() => openBrand(null)} onOpen={setSelected} />}
 
       {view === 'list' &&
         (fragrances.length === 0 ? (
@@ -37,10 +47,12 @@ export function CatalogSection() {
         ) : (
           <ul className="mt-8 rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
             {fragrances.map((f) => (
-              <FragranceRow key={f.id} fragrance={f} showBrand />
+              <FragranceRow key={f.id} fragrance={f} showBrand onOpen={setSelected} />
             ))}
           </ul>
         ))}
+
+      <FragranceDialog fragrance={selected} onClose={closeDialog} />
     </Container>
   );
 }
@@ -55,4 +67,9 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       </button>
     </div>
   );
+}
+
+function fragranceFromHash(): Fragrance | null {
+  const id = new URLSearchParams(window.location.hash.slice(1)).get('f');
+  return id ? (catalog.fragrances.find((f) => f.id === id) ?? null) : null;
 }

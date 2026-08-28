@@ -28,5 +28,11 @@ npm run typecheck
 npm run serve      # раздаёт dist/ по локальной сети: http://<IP-компьютера>:4173
 ```
 
+## Данные об ароматах (Fragella)
+Описания, фото, ноты и аккорды подтянуты один раз из [Fragella API](https://api.fragella.com) скриптом `scripts/fetch-fragella.mjs`
+(ключ — в `.env`, переменная `FRAGELLA_API_KEY`; файл в git не попадает). Сырые ответы API кешируются в `data/fragella/raw/`,
+поэтому повторный запуск не тратит квоту — запросы уходят только для новых позиций. Итог — `src/data/fragella.json`
+(320 из 330 ароматов сопоставлены). Ручные соответствия и уточнённые запросы — в `OVERRIDES` / `QUERY` внутри скрипта.
+
 ## Обновление прайса
 Отредактируйте `src/data/catalog.json` (`["Название", "female|male|unisex", цена_за_мл]`) и выполните `npm run build`.
