@@ -5,3 +5,4 @@ dist
 design-variants
 .env
 .env.*
+tsconfig.app.tsbuildinfo
