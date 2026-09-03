@@ -46,6 +46,8 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
+  /* Freeze the page while a modal dialog is open so swiping the card doesn't scroll the content behind it. */
+  body:has(dialog[open]) { overflow: hidden; }
   body { @apply bg-bg font-sans text-fg antialiased transition-colors duration-300; }
   ::selection { background: color-mix(in oklab, var(--color-gold) 40%, transparent); }
 }
