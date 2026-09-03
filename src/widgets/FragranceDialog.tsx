@@ -25,8 +25,16 @@ export function FragranceDialog({ fragrance, onClose }: { fragrance: Fragrance |
       className="m-auto w-[min(100vw-1.5rem,56rem)] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-3xl border border-line bg-surface p-0 text-fg shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
       {fragrance && (
-        <article className="grid gap-8 p-6 sm:p-8 md:grid-cols-[18rem_1fr]">
-          <button type="button" onClick={onClose} aria-label="Закрыть" className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-full border border-line text-muted hover:border-gold hover:text-gold">✕</button>
+        <>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Закрыть"
+            className="sticky top-3 z-10 float-right mt-3 mr-3 -mb-12 flex size-9 items-center justify-center rounded-full border border-line bg-surface/90 text-muted shadow-sm backdrop-blur hover:border-gold hover:text-gold"
+          >
+            ✕
+          </button>
+          <article className="grid gap-8 p-6 sm:p-8 md:grid-cols-[18rem_1fr]">
 
           <figure className="flex flex-col gap-3">
             <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-2xl border border-line p-4">
@@ -101,7 +109,8 @@ export function FragranceDialog({ fragrance, onClose }: { fragrance: Fragrance |
               <p className="mt-6 text-sm text-muted">Подробное описание для этого аромата пока не добавлено.</p>
             )}
           </div>
-        </article>
+          </article>
+        </>
       )}
     </dialog>
   );
