@@ -28,10 +28,25 @@ export function App() {
     [navigate, onFragrancePage],
   );
   const goHome = useCallback(() => navigate({ type: 'home' }), [navigate]);
+  const goSection = useCallback(
+    (sectionId?: string) => {
+      savedScroll.current = 0;
+      navigate({ type: 'home' });
+      requestAnimationFrame(() => {
+        if (sectionId) document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    },
+    [navigate],
+  );
+  const selectBrand = useCallback(
+    (brandId: string | null) => navigate(brandId ? { type: 'brand', id: brandId } : { type: 'home' }),
+    [navigate],
+  );
 
   return (
     <>
-      <Header />
+      <Header onNavigate={goSection} />
       {onFragrancePage && (
         <main>
           <FragrancePage id={route.id} onBack={goHome} onOpen={openFragrance} />
@@ -39,7 +54,7 @@ export function App() {
       )}
       <main hidden={onFragrancePage}>
         <Hero />
-        <CatalogSection onOpen={openFragrance} />
+        <CatalogSection onOpen={openFragrance} brandId={route.type === 'brand' ? route.id : null} onSelectBrand={selectBrand} />
         <About />
       </main>
       <Footer />

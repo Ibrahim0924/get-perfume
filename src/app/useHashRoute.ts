@@ -1,14 +1,34 @@
 import { useCallback, useEffect, useState } from 'react';
+import { catalog, fragranceByPath, fragrancePath, isBrandId } from '@/entities/fragrance';
 
-export type Route = { type: 'home' } | { type: 'fragrance'; id: string };
+export type Route = { type: 'home' } | { type: 'brand'; id: string } | { type: 'fragrance'; id: string };
+
+function canonicalHash(route: Route): string {
+  if (route.type === 'brand') return `#/${route.id}`;
+  if (route.type === 'fragrance') {
+    const path = fragrancePath(route.id);
+    return path ? `#/${path}` : '';
+  }
+  return '';
+}
 
 function parseHash(hash: string): Route {
-  const h = hash.replace(/^#/, '');
-  const page = h.match(/^\/f\/(.+)$/);
-  if (page) return { type: 'fragrance', id: decodeURIComponent(page[1]!) };
-  // Legacy deep links from the dialog era: #f=<id>
-  const legacy = new URLSearchParams(h).get('f');
-  if (legacy) return { type: 'fragrance', id: legacy };
+  const h = hash.replace(/^#\/?/, '');
+  if (!h) return { type: 'home' };
+
+  // Legacy formats — resolved so old shared links keep working.
+  const legacyFragrance = h.match(/^f\/(.+)$/)?.[1] ?? new URLSearchParams(h).get('f');
+  if (legacyFragrance) {
+    const id = decodeURIComponent(legacyFragrance);
+    return catalog.fragrances.some((f) => f.id === id) ? { type: 'fragrance', id } : { type: 'home' };
+  }
+  const legacyBrand = h.match(/^b\/(.+)$/);
+  if (legacyBrand) return { type: 'brand', id: decodeURIComponent(legacyBrand[1]!) };
+
+  const path = decodeURIComponent(h).replace(/\/+$/, '');
+  const fragrance = fragranceByPath(path);
+  if (fragrance) return { type: 'fragrance', id: fragrance.id };
+  if (isBrandId(path)) return { type: 'brand', id: path };
   return { type: 'home' };
 }
 
@@ -21,8 +41,16 @@ export function useHashRoute() {
     return () => window.removeEventListener('hashchange', onChange);
   }, []);
 
+  // Quietly rewrite legacy hashes to the canonical short form.
+  useEffect(() => {
+    const canonical = canonicalHash(route);
+    const current = window.location.hash;
+    if (canonical && current !== canonical) history.replaceState(null, '', canonical);
+    if (!canonical && route.type === 'home' && current && current !== '#') history.replaceState(null, '', window.location.pathname + window.location.search);
+  }, [route]);
+
   const navigate = useCallback((to: Route) => {
-    window.location.hash = to.type === 'fragrance' ? `/f/${encodeURIComponent(to.id)}` : '';
+    window.location.hash = canonicalHash(to);
   }, []);
 
   return { route, navigate };

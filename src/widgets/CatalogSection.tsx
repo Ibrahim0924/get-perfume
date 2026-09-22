@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { Fragrance } from '@/entities/fragrance';
 import { useCatalogFilters } from '@/features/catalog';
 import { Container } from '@/shared/ui/Container';
@@ -7,30 +7,39 @@ import { BrandView } from './BrandView';
 import { CatalogToolbar } from './CatalogToolbar';
 import { FragranceRow } from './FragranceRow';
 
-export function CatalogSection({ onOpen }: { onOpen: (f: Fragrance) => void }) {
+interface Props {
+  onOpen: (f: Fragrance) => void;
+  /** Selected brand comes from the URL hash so browser Back works. */
+  brandId: string | null;
+  onSelectBrand: (brandId: string | null) => void;
+}
+
+export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
   const { filters, fragrances, selectedBrand, view, isRefined, actions } = useCatalogFilters();
 
-  const openBrand = useCallback(
-    (brandId: string | null) => {
+  // Mirror the route into filter state (single source of truth is the hash).
+  useEffect(() => {
+    if (filters.brandId !== brandId) {
       actions.selectBrand(brandId);
-      document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    },
-    [actions],
-  );
+      if (brandId) document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [brandId, filters.brandId, actions]);
+
+  const routedActions = useMemo(() => ({ ...actions, selectBrand: onSelectBrand }), [actions, onSelectBrand]);
 
   return (
     <Container id="catalog" className="scroll-mt-16 pb-24">
       <CatalogToolbar
         filters={filters}
-        actions={actions}
+        actions={routedActions}
         resultCount={fragrances.length}
         isRefined={isRefined}
         selectedBrand={selectedBrand}
       />
 
-      {view === 'brands' && <BrandGrid onSelect={openBrand} />}
+      {view === 'brands' && <BrandGrid onSelect={onSelectBrand} />}
 
-      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onBack={() => openBrand(null)} onOpen={onOpen} />}
+      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onBack={() => onSelectBrand(null)} onOpen={onOpen} />}
 
       {view === 'list' &&
         (fragrances.length === 0 ? (
