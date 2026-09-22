@@ -31,6 +31,15 @@ export function Header({ onNavigate }: Props) {
           <ThemeToggle />
         </div>
       </Container>
+      <nav
+        className="-mb-px flex items-center gap-6 overflow-x-auto border-t border-line/60 px-5 py-2.5 text-sm text-muted [scrollbar-width:none] sm:hidden [&::-webkit-scrollbar]:hidden"
+        aria-label="Навигация"
+      >
+        <a className="shrink-0" href="#catalog" onClick={go('catalog')}>Каталог</a>
+        <a className="shrink-0" href="#about" onClick={go('about')}>О нас</a>
+        <a className="shrink-0" href="#delivery" onClick={go('delivery')}>Доставка</a>
+        <a className="shrink-0" href="#contacts" onClick={go('contacts')}>Контакты</a>
+      </nav>
     </header>
   );
 }
