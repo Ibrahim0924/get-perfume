@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import type { Fragrance } from '@/entities/fragrance';
 import { About } from '@/widgets/About';
+import { Contacts } from '@/widgets/Contacts';
+import { Delivery } from '@/widgets/Delivery';
 import { CatalogSection } from '@/widgets/CatalogSection';
 import { Footer } from '@/widgets/Footer';
 import { FragrancePage } from '@/widgets/FragrancePage';
@@ -56,6 +58,8 @@ export function App() {
         <Hero />
         <CatalogSection onOpen={openFragrance} brandId={route.type === 'brand' ? route.id : null} onSelectBrand={selectBrand} />
         <About />
+        <Delivery />
+        <Contacts />
       </main>
       <Footer />
     </>

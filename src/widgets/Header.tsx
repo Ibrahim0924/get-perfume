@@ -25,6 +25,8 @@ export function Header({ onNavigate }: Props) {
           <nav className="hidden items-center gap-8 text-sm text-muted sm:flex" aria-label="Основная навигация">
             <a className="transition-colors hover:text-fg" href="#catalog" onClick={go('catalog')}>Каталог</a>
             <a className="transition-colors hover:text-fg" href="#about" onClick={go('about')}>О нас</a>
+            <a className="transition-colors hover:text-fg" href="#delivery" onClick={go('delivery')}>Доставка</a>
+            <a className="transition-colors hover:text-fg" href="#contacts" onClick={go('contacts')}>Контакты</a>
           </nav>
           <ThemeToggle />
         </div>
