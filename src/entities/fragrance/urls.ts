@@ -1,8 +1,14 @@
+import idsRaw from '@/data/ids.json';
 import { slugify } from '@/shared/lib/slugify';
 import { catalog } from './catalog';
 import type { Fragrance } from './types';
 
-/** Clean URL paths: `<brand>/<name>`, with a short gender suffix only when a name repeats within the brand. */
+/**
+ * Canonical URL is the short numeric id (`#/217`, from src/data/ids.json — stable, append-only).
+ * Readable `<brand>/<name>` paths keep resolving as aliases.
+ */
+const numericIds = idsRaw as Record<string, number>;
+
 const GENDER_SUFFIX = { female: 'f', male: 'm', unisex: 'u' } as const;
 
 const idToPath = new Map<string, string>();
@@ -17,9 +23,14 @@ for (const brand of catalog.brands) {
   for (const f of brand.fragrances) {
     const s = slugify(f.name);
     const slug = (counts.get(s) ?? 0) > 1 ? `${s}-${GENDER_SUFFIX[f.gender]}` : s;
-    const path = `${brand.id}/${slug}`;
-    idToPath.set(f.id, path);
-    pathToFragrance.set(path, f);
+    pathToFragrance.set(`${brand.id}/${slug}`, f);
+    const num = numericIds[f.id];
+    if (num !== undefined) {
+      idToPath.set(f.id, String(num));
+      pathToFragrance.set(String(num), f);
+    } else {
+      idToPath.set(f.id, `${brand.id}/${slug}`);
+    }
   }
 }
 

@@ -20,6 +20,7 @@ export interface FragranceDetails {
   popularity: string | null;
   image: string | null;
   imageTransparent: string | null;
+  imageFallback: string | null;
   accords: Accord[];
   notes: { top: Note[]; middle: Note[]; base: Note[] };
   generalNotes: string[];

@@ -113,7 +113,7 @@ const compact = (c, s) => ({
   fragellaId: c._id, name: c.Name, brand: c.Brand, gender: GENDER[String(c.Gender ?? '').toLowerCase()] ?? null,
   year: c.Year || null, country: c.Country || null, oilType: c.OilType || null, rating: c.rating ? Number(c.rating) : null,
   longevity: c.Longevity || null, sillage: c.Sillage || null, popularity: c.Popularity || null,
-  image: c['Image URL'] || null, imageTransparent: c['Image URL Transparent'] || null,
+  image: c['Image URL'] || null, imageTransparent: c['Image URL Transparent'] || null, imageFallback: (c['Image Fallbacks'] ?? [])[0] ?? null,
   accords: (c['Main Accords'] ?? []).map((n) => ({ name: n, strength: c['Main Accords Percentage']?.[n] ?? null })),
   notes: Object.fromEntries(['Top', 'Middle', 'Base'].map((k) => [k.toLowerCase(), (c.Notes?.[k] ?? []).map((n) => ({ name: n.name, image: n.imageUrl ?? null }))])),
   generalNotes: c['General Notes'] ?? [],

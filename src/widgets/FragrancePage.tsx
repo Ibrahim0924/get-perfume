@@ -46,8 +46,8 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
 
       <article className="grid gap-10 lg:grid-cols-[22rem_1fr]">
         <figure className="flex flex-col gap-3 lg:sticky lg:top-24 lg:self-start">
-          <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-3xl border border-line p-6">
-            <FragranceImage src={d?.imageTransparent ?? null} fallbackSrc={d?.image ?? null} alt={fragrance.name} className="max-h-full max-w-full" />
+          <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-3xl border border-line p-6 [--photo-plate:var(--bg)]">
+            <FragranceImage sources={[d?.image, d?.imageTransparent, d?.imageFallback]} alt={fragrance.name} className="max-h-full max-w-full" />
           </div>
           <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">
             <span aria-hidden="true" className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-current text-[9px] font-bold">i</span>
@@ -61,18 +61,6 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="font-display text-3xl text-gold">{formatPrice(fragrance.pricePerMl)}<span className="ml-1 text-sm text-muted">/ мл</span></span>
             <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', GENDER_TONE[fragrance.gender])}>{GENDER_LABEL[fragrance.gender]}</span>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl border border-line/70 bg-surface px-5 py-4">
-            <div className="min-w-0">
-              <p className="text-sm font-medium">Для оформления заказа пишите нам</p>
-              <p className="text-xs text-muted">WhatsApp · {WHATSAPP_PHONE_DISPLAY}</p>
-            </div>
-            <WhatsAppButton
-              className="ml-auto"
-              label="Заказать в WhatsApp"
-              text={`Здравствуйте! Хочу заказать аромат ${fragrance.brand} — ${fragrance.name} (${fragrance.pricePerMl} ₽/мл).`}
-            />
           </div>
 
           {d ? (
@@ -126,9 +114,34 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
                 Характеристики, ноты и аккорды приведены по оригинальной композиции как ориентир. Наш аромат создан по её мотивам —
                 отдельные оттенки звучания, стойкость и шлейф могут немного отличаться в зависимости от кожи и условий.
               </p>
+              <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl border border-line/70 bg-surface px-5 py-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Понравился аромат? Для оформления заказа пишите нам</p>
+                  <p className="text-xs text-muted">WhatsApp · {WHATSAPP_PHONE_DISPLAY}</p>
+                </div>
+                <WhatsAppButton
+                  className="ml-auto"
+                  label="Заказать в WhatsApp"
+                  text={`Здравствуйте! Хочу заказать аромат ${fragrance.brand} — ${fragrance.name} (${fragrance.pricePerMl} ₽/мл).`}
+                />
+              </div>
+
             </>
           ) : (
+            <>
             <p className="mt-7 text-sm text-muted">Подробное описание для этого аромата пока не добавлено — уточните детали при заказе.</p>
+              <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl border border-line/70 bg-surface px-5 py-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Для оформления заказа пишите нам</p>
+                  <p className="text-xs text-muted">WhatsApp · {WHATSAPP_PHONE_DISPLAY}</p>
+                </div>
+                <WhatsAppButton
+                  className="ml-auto"
+                  label="Заказать в WhatsApp"
+                  text={`Здравствуйте! Хочу заказать аромат ${fragrance.brand} — ${fragrance.name} (${fragrance.pricePerMl} ₽/мл).`}
+                />
+              </div>
+            </>
           )}
         </div>
       </article>
@@ -164,7 +177,7 @@ function SimilarThumb({ id, name }: { id: string; name: string }) {
   const d = getDetails(id);
   return (
     <span className="photo-frame flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-line/70 p-2">
-      <FragranceImage src={d?.imageTransparent ?? null} fallbackSrc={d?.image ?? null} alt={name} className="max-h-full max-w-full" />
+      <FragranceImage sources={[d?.image, d?.imageTransparent, d?.imageFallback]} alt={name} className="max-h-full max-w-full" />
     </span>
   );
 }

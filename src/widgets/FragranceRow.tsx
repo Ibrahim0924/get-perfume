@@ -25,7 +25,7 @@ export function FragranceRow({ fragrance, showBrand = false, onOpen }: Props) {
         className="group flex w-full flex-wrap items-center gap-x-4 gap-y-1.5 py-2.5 text-left sm:flex-nowrap sm:py-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
       >
         <span className="photo-frame flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line/70">
-          <FragranceImage src={d?.imageTransparent ?? null} fallbackSrc={d?.image ?? null} alt="" className="size-10" />
+          <FragranceImage sources={[d?.image, d?.imageTransparent, d?.imageFallback]} alt="" className="size-10" />
         </span>
         <span className="min-w-0 flex-1 basis-[calc(100%-4rem)] sm:basis-auto">
           {showBrand && <span className="block text-xs tracking-[0.15em] text-muted uppercase">{fragrance.brand}</span>}

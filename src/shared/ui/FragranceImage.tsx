@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { cn } from '@/shared/lib/cn';
 
 interface Props {
-  src: string | null;
-  fallbackSrc?: string | null;
+  /** Candidate URLs, tried in order until one loads. */
+  sources: (string | null | undefined)[];
   alt: string;
   className?: string;
 }
 
-/** Remote reference image; falls back to the secondary URL, then to a bottle glyph. */
-export function FragranceImage({ src, fallbackSrc, alt, className }: Props) {
+/** Remote reference photo; walks the source list on error, then shows a bottle glyph. */
+export function FragranceImage({ sources, alt, className }: Props) {
   const [stage, setStage] = useState(0);
-  const url = stage === 0 ? src : stage === 1 ? fallbackSrc : null;
+  const urls = sources.filter((s): s is string => Boolean(s));
+  const url = urls[stage] ?? null;
   if (!url) {
     return (
       <div className={cn('flex items-center justify-center text-muted/60', className)} aria-hidden="true">
