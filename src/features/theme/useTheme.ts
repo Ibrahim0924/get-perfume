@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export type Theme = 'light' | 'dark';
-const STORAGE_KEY = 'misk-world:theme';
+const STORAGE_KEY = 'get-perfume:theme';
 
 function readStoredTheme(): Theme | null {
   try {

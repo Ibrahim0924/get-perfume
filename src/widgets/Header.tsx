@@ -6,10 +6,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-line/60 bg-bg/85 backdrop-blur-md">
       <Container className="flex h-16 items-center justify-between [padding-left:max(1.25rem,env(safe-area-inset-left))] [padding-right:max(1.25rem,env(safe-area-inset-right))]">
-        <a href="#top" className="flex items-center gap-3" aria-label="Misk World — на главную">
+        <a href="#top" className="flex items-center gap-3" aria-label="Get Perfume — на главную">
           <Logo className="size-8" />
           <span className="font-display text-2xl leading-none tracking-wide text-fg">
-            Misk <span className="text-gold">World</span>
+            Get <span className="text-gold">Perfume</span>
           </span>
         </a>
         <div className="flex items-center gap-6">

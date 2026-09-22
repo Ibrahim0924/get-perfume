@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#ebe5da" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c1b18" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="Misk World — ароматы по мотивам известных брендов. Прайс-лист, цена за миллилитр." />
-    <title>Misk World — Ароматы по мотивам известных брендов</title>
+    <meta name="description" content="Get Perfume — ароматы по мотивам известных брендов. Прайс-лист, цена за миллилитр." />
+    <title>Get Perfume — Ароматы по мотивам известных брендов</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,7 +17,7 @@
       // Apply the saved/system theme before first paint to avoid a flash.
       (function () {
         try {
-          var t = localStorage.getItem('misk-world:theme');
+          var t = localStorage.getItem('get-perfume:theme');
           if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
           document.documentElement.dataset.theme = t;
         } catch (e) { document.documentElement.dataset.theme = 'light'; }
