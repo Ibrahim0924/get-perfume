@@ -61,7 +61,7 @@ export function App() {
         <Delivery />
         <Contacts />
       </main>
-      <Footer />
+      <Footer onNavigate={goSection} />
     </>
   );
 }
