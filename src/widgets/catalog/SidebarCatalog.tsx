@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { catalog, GENDER_LABEL, GENDERS, type Brand, type Fragrance } from '@/entities/fragrance';
 import { SORT_LABEL, SORT_MODES, type CatalogActions, type CatalogFilters, type SortMode } from '@/features/catalog';
 import { cn } from '@/shared/lib/cn';
@@ -14,6 +14,8 @@ interface Props {
 }
 
 const BRANDS_COLLAPSED = 8;
+/** Rows shown at once; "Показать ещё" reveals the next batch. */
+const PAGE_SIZE = 24;
 
 /** Variant "Фильтры слева, список справа": facets in a sidebar, a flat fragrance list next to it. */
 export function SidebarCatalog({ filters, actions, fragrances, selectedBrand, onOpen }: Props) {
@@ -21,6 +23,12 @@ export function SidebarCatalog({ filters, actions, fragrances, selectedBrand, on
   const brands = allBrands ? catalog.brands : catalog.brands.slice(0, BRANDS_COLLAPSED);
   const hiddenBrand = selectedBrand && !brands.some((b) => b.id === selectedBrand.id) ? selectedBrand : null;
   const isRefined = filters.query.trim() !== '' || filters.genders.size > 0 || filters.prices.size > 0 || filters.brandId !== null;
+
+  // Reveal the list in batches; start over whenever the result set changes.
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  useEffect(() => setLimit(PAGE_SIZE), [fragrances]);
+  const visible = fragrances.slice(0, limit);
+  const remaining = fragrances.length - visible.length;
 
   return (
     <div className="mt-6 grid gap-8 lg:grid-cols-[240px_1fr] lg:gap-10">
@@ -95,11 +103,31 @@ export function SidebarCatalog({ filters, actions, fragrances, selectedBrand, on
             </button>
           </div>
         ) : (
-          <ul className="mt-4 rounded-2xl border border-line/70 bg-surface px-4 sm:px-6">
-            {fragrances.map((f) => (
-              <FragranceRow key={f.id} fragrance={f} showBrand onOpen={onOpen} />
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 rounded-2xl border border-line/70 bg-surface px-4 sm:px-6">
+              {visible.map((f) => (
+                <FragranceRow key={f.id} fragrance={f} showBrand onOpen={onOpen} />
+              ))}
+            </ul>
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <p className="text-xs tracking-[0.15em] text-muted uppercase">
+                Показано {visible.length} из {fragrances.length}
+              </p>
+              <span aria-hidden="true" className="h-px w-40 overflow-hidden rounded-full bg-line">
+                <span className="block h-full bg-gold transition-[width] duration-500" style={{ width: `${(visible.length / fragrances.length) * 100}%` }} />
+              </span>
+              {remaining > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setLimit((n) => n + PAGE_SIZE)}
+                  className="mt-1 inline-flex h-12 items-center gap-2 rounded-full border border-gold px-7 text-sm font-semibold text-gold transition-all hover:-translate-y-0.5 hover:bg-gold hover:text-on-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+                >
+                  Показать ещё {Math.min(PAGE_SIZE, remaining)}
+                  <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+                </button>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
