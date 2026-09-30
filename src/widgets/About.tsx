@@ -11,7 +11,7 @@ export function About() {
   return (
     <section id="about" className="scroll-mt-16 border-t border-line/60 bg-surface">
       <Container className="py-14 sm:py-20">
-        <h2 className="font-display text-3xl text-fg sm:text-4xl">О Get Perfume</h2>
+        <h2 className="font-display text-3xl text-fg sm:text-4xl">О GerParfume</h2>
         <div className="mt-8 grid gap-8 sm:mt-10 md:grid-cols-3">
           {POINTS.map((p) => (
             <article key={p.title}>

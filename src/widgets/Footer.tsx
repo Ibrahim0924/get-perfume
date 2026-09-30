@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { FOOTER_VARIANTS } from './footer/variants';
 
-const STORAGE_KEY = 'get-perfume:footer-variant';
+const STORAGE_KEY = 'gerparfume:footer-variant';
 
 function readStored(): number {
   try {

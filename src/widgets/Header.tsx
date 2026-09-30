@@ -15,10 +15,10 @@ export function Header({ onNavigate }: Props) {
   return (
     <header className="sticky top-0 z-30 border-b border-line/60 bg-bg/85 backdrop-blur-md">
       <Container className="flex h-16 items-center justify-between [padding-left:max(1.25rem,env(safe-area-inset-left))] [padding-right:max(1.25rem,env(safe-area-inset-right))]">
-        <a href="#" onClick={go()} className="flex items-center gap-3" aria-label="Get Perfume — на главную">
+        <a href="#" onClick={go()} className="flex items-center gap-3" aria-label="GerParfume — на главную">
           <Logo className="size-8" />
           <span className="font-display text-2xl leading-none tracking-wide text-fg">
-            Get <span className="text-gold">Perfume</span>
+            Ger<span className="text-gold">Parfume</span>
           </span>
         </a>
         <div className="flex items-center gap-6">

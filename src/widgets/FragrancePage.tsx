@@ -23,8 +23,8 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
   const similar = fragrance ? findSimilar(fragrance) : [];
 
   useEffect(() => {
-    document.title = fragrance ? `${fragrance.name} — ${fragrance.brand} · Get Perfume` : 'Get Perfume';
-    return () => { document.title = 'Get Perfume — Ароматы по мотивам известных брендов'; };
+    document.title = fragrance ? `${fragrance.name} — ${fragrance.brand} · GerParfume` : 'GerParfume';
+    return () => { document.title = 'GerParfume — Ароматы по мотивам известных брендов'; };
   }, [fragrance]);
 
   if (!fragrance) {

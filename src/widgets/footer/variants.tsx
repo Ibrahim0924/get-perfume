@@ -29,7 +29,7 @@ function NavLinks({ nav, className = '', vertical = false }: { nav: Nav; classNa
 }
 
 const Wordmark = ({ className = '' }: { className?: string }) => (
-  <span className={`font-display text-2xl ${className}`}>Get <span className="text-gold">Perfume</span></span>
+  <span className={`font-display text-2xl ${className}`}>Ger<span className="text-gold">Parfume</span></span>
 );
 const Phone = () => (
   <a href={whatsAppLink()} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-gold">{WHATSAPP_PHONE_DISPLAY}</a>
@@ -56,7 +56,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
           </div>
         </div>
         <div className="mt-8 flex flex-col gap-1.5 border-t border-line/60 pt-4 text-xs text-muted sm:flex-row sm:justify-between">
-          <span>© {YEAR} Get Perfume</span><span>{DISCLAIMER}</span>
+          <span>© {YEAR} GerParfume</span><span>{DISCLAIMER}</span>
         </div>
       </Container>
     ),
@@ -75,7 +75,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
     name: 'Гигантский вордмарк',
     render: (nav) => (
       <Container className="overflow-hidden py-10">
-        <div aria-hidden="true" className="font-display text-center text-[clamp(3rem,12vw,9rem)] leading-[0.9] whitespace-nowrap text-gold opacity-25">Get Perfume</div>
+        <div aria-hidden="true" className="font-display text-center text-[clamp(3rem,12vw,9rem)] leading-[0.9] whitespace-nowrap text-gold opacity-25">GerParfume</div>
         <div className="mt-3 flex flex-col items-center gap-2 text-[13px] text-muted sm:flex-row sm:justify-between">
           <span>© {YEAR}</span><NavLinks nav={nav} className="text-muted" /><span>WhatsApp <Phone /></span>
         </div>
@@ -88,11 +88,11 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
       <div className="bg-[#211d18] text-[#f3ecdf]">
         <Container className="py-11">
           <div className="flex flex-wrap items-center justify-center gap-6 sm:justify-between">
-            <span className="font-display text-2xl">Get <span className="text-[#c9a86a]">Perfume</span></span>
+            <span className="font-display text-2xl">Ger<span className="text-[#c9a86a]">Parfume</span></span>
             <NavLinks nav={nav} className="text-[#a89d8d]" />
             <WhatsAppButton label="WhatsApp" className="h-10 px-5" />
           </div>
-          <p className="mt-6 text-center text-xs text-[#7d7365] sm:text-left">© {YEAR} Get Perfume · Ароматы по мотивам известных композиций</p>
+          <p className="mt-6 text-center text-xs text-[#7d7365] sm:text-left">© {YEAR} GerParfume · Ароматы по мотивам известных композиций</p>
         </Container>
       </div>
     ),
@@ -106,7 +106,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
         <div className="mt-6"><WhatsAppButton label="Написать в WhatsApp" text="Здравствуйте! Есть вопрос." /></div>
         <div className="mt-9 flex flex-col items-center gap-3 text-xs text-muted">
           <NavLinks nav={nav} className="justify-center text-muted" />
-          <span>© {YEAR} Get Perfume</span>
+          <span>© {YEAR} GerParfume</span>
         </div>
       </Container>
     ),
@@ -120,7 +120,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
           <span className="text-sm">WhatsApp · <Phone /></span>
         </div>
         <div className="mt-6 flex flex-col gap-1 border-t border-line/60 pt-4 text-xs text-muted sm:flex-row sm:justify-between">
-          <span>© {YEAR} Get Perfume</span><span>сделано с любовью к ароматам</span>
+          <span>© {YEAR} GerParfume</span><span>сделано с любовью к ароматам</span>
         </div>
       </Container>
     ),
@@ -133,7 +133,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
           <Wordmark />
           <NavLinks nav={nav} className="text-muted" />
         </div>
-        <p className="mt-5 max-w-xl text-[11px] leading-relaxed text-muted">{DISCLAIMER} Названия используются только для описания направления звучания. © {YEAR} Get Perfume.</p>
+        <p className="mt-5 max-w-xl text-[11px] leading-relaxed text-muted">{DISCLAIMER} Названия используются только для описания направления звучания. © {YEAR} GerParfume.</p>
       </Container>
     ),
   },
@@ -161,7 +161,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
           </div>
           <div><Wordmark /></div>
         </div>
-        <p className="mt-8 text-xs text-muted">© {YEAR} Get Perfume</p>
+        <p className="mt-8 text-xs text-muted">© {YEAR} GerParfume</p>
       </Container>
     ),
   },
@@ -177,7 +177,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
           <WhatsAppButton label="Подобрать аромат" text="Здравствуйте! Помогите подобрать аромат." />
         </div>
         <div className="mt-7 flex flex-col gap-2 border-t border-line/60 pt-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <span>© {YEAR} Get Perfume</span><NavLinks nav={nav} className="text-xs text-muted" />
+          <span>© {YEAR} GerParfume</span><NavLinks nav={nav} className="text-xs text-muted" />
         </div>
       </Container>
     ),
@@ -188,7 +188,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
       <Container className="py-13 text-center">
         <WhatsAppButton label="Заказать в WhatsApp" className="h-13 px-8 text-[15px]" />
         <NavLinks nav={nav} className="mt-5 justify-center text-muted" />
-        <p className="mt-4 text-xs text-muted">© {YEAR} Get Perfume</p>
+        <p className="mt-4 text-xs text-muted">© {YEAR} GerParfume</p>
       </Container>
     ),
   },
@@ -224,7 +224,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
       <div>
         <div className="font-display overflow-hidden border-b border-line/60 py-3.5 text-lg whitespace-nowrap text-gold italic">{NOTES} · {NOTES}</div>
         <Container className="flex flex-col gap-1.5 py-6 text-[13px] text-muted sm:flex-row sm:justify-between">
-          <span>© {YEAR} Get Perfume</span><span>WhatsApp <Phone /></span>
+          <span>© {YEAR} GerParfume</span><span>WhatsApp <Phone /></span>
         </Container>
       </div>
     ),
@@ -233,7 +233,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
     name: 'Одна строка',
     render: () => (
       <Container className="flex flex-col items-center gap-2 py-5 text-[13px] text-muted sm:flex-row sm:justify-between">
-        <span className="font-display text-lg text-fg">Get <span className="text-gold">Perfume</span></span>
+        <span className="font-display text-lg text-fg">Ger<span className="text-gold">Parfume</span></span>
         <span>© {YEAR} · Ароматы по мотивам · WhatsApp <Phone /></span>
       </Container>
     ),
@@ -249,7 +249,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
           </div>
           <WhatsAppButton label="WhatsApp" />
         </div>
-        <p className="mt-4 text-center text-xs text-muted">© {YEAR} Get Perfume</p>
+        <p className="mt-4 text-center text-xs text-muted">© {YEAR} GerParfume</p>
       </Container>
     ),
   },
@@ -277,7 +277,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
     render: () => (
       <Container className="py-14 text-center">
         <h3 className="font-display text-3xl italic sm:text-4xl">Запахи, которые остаются</h3>
-        <p className="mt-4 text-[13px] text-muted">Get Perfume · © {YEAR} · WhatsApp <Phone /></p>
+        <p className="mt-4 text-[13px] text-muted">GerParfume · © {YEAR} · WhatsApp <Phone /></p>
       </Container>
     ),
   },
@@ -286,7 +286,7 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
     render: (nav) => (
       <div className="bg-[radial-gradient(60%_120%_at_50%_0%,#3a3126,#211d18)] text-[#f3ecdf]">
         <Container className="py-13 text-center">
-          <span className="font-display text-3xl">Get <span className="text-[#c9a86a]">Perfume</span></span>
+          <span className="font-display text-3xl">Ger<span className="text-[#c9a86a]">Parfume</span></span>
           <NavLinks nav={nav} className="mt-4 justify-center text-[#a89d8d]" />
           <p className="mt-4 text-xs text-[#7d7365]">© {YEAR} · WhatsApp {WHATSAPP_PHONE_DISPLAY} · ароматы по мотивам</p>
         </Container>
@@ -309,11 +309,11 @@ export const FOOTER_VARIANTS: FooterVariant[] = [
     name: 'Столбик по центру',
     render: (nav) => (
       <Container className="flex flex-col items-center gap-4 py-12 text-center">
-        <span className="font-display text-3xl">Get <span className="text-gold">Perfume</span></span>
+        <span className="font-display text-3xl">Ger<span className="text-gold">Parfume</span></span>
         <p className="font-display text-lg text-muted italic">искусство пахнуть собой</p>
         <WhatsAppButton label="Написать нам" className="h-11" />
         <NavLinks nav={nav} className="justify-center text-muted" />
-        <p className="text-xs text-muted">© {YEAR} Get Perfume</p>
+        <p className="text-xs text-muted">© {YEAR} GerParfume</p>
       </Container>
     ),
   },
