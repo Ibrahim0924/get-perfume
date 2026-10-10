@@ -1,4 +1,4 @@
-import { catalog, getDetails, type Brand } from '@/entities/fragrance';
+import { catalog, getDetails, localPhoto, type Brand } from '@/entities/fragrance';
 import { plural } from '@/shared/lib/format';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
 
@@ -32,7 +32,7 @@ function BrandPreviewCard({ brand, onSelect }: { brand: Brand; onSelect: (id: st
           const d = getDetails(f.id);
           return (
             <span key={f.id} className="photo-frame flex size-16 items-center justify-center overflow-hidden rounded-2xl border border-line/70">
-              <FragranceImage sources={[d?.imageTransparent, d?.image, d?.imageFallback]} alt="" className="size-12" />
+              <FragranceImage sources={[localPhoto(f.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt="" className="size-12" />
             </span>
           );
         })}

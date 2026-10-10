@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import {
-  catalog, GENDER_LABEL, getDetails, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
+  catalog, GENDER_LABEL, getDetails, localPhoto, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
   type Fragrance, type Note,
 } from '@/entities/fragrance';
 import { findSimilar } from '@/features/similar';
@@ -47,7 +47,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
       <article className="grid gap-10 lg:grid-cols-[22rem_1fr]">
         <figure className="flex flex-col gap-3 lg:sticky lg:top-24 lg:self-start">
           <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-3xl border border-line p-6 [--photo-plate:var(--bg)]">
-            <FragranceImage sources={[d?.image, d?.imageTransparent, d?.imageFallback]} alt={fragrance.name} className="max-h-full max-w-full" />
+            <FragranceImage sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={fragrance.name} className="max-h-full max-w-full" />
           </div>
           <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">
             <span aria-hidden="true" className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-current text-[9px] font-bold">i</span>
@@ -177,7 +177,7 @@ function SimilarThumb({ id, name }: { id: string; name: string }) {
   const d = getDetails(id);
   return (
     <span className="photo-frame flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-line/70 p-2">
-      <FragranceImage sources={[d?.image, d?.imageTransparent, d?.imageFallback]} alt={name} className="max-h-full max-w-full" />
+      <FragranceImage sources={[localPhoto(id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={name} className="max-h-full max-w-full" />
     </span>
   );
 }

@@ -6,3 +6,4 @@ design-variants
 .env
 .env.*
 tsconfig.app.tsbuildinfo
+data/photos/raw
