@@ -1,37 +1,45 @@
-import { useCallback, useState } from 'react';
-import { FOOTER_VARIANTS } from './footer/variants';
+import { Container } from '@/shared/ui/Container';
+import { WHATSAPP_PHONE_DISPLAY, whatsAppLink } from '@/shared/ui/WhatsAppButton';
 
-const STORAGE_KEY = 'gerparfume:footer-variant';
-
-function readStored(): number {
-  try {
-    const n = Number(localStorage.getItem(STORAGE_KEY));
-    return Number.isInteger(n) && n >= 0 && n < FOOTER_VARIANTS.length ? n : 0;
-  } catch {
-    return 0;
-  }
-}
+const YEAR = new Date().getFullYear();
+const LINKS: [label: string, section: string][] = [
+  ['Каталог', 'catalog'],
+  ['О нас', 'about'],
+  ['Доставка', 'delivery'],
+  ['Контакты', 'contacts'],
+];
+const DISCLAIMER = 'Все ароматы созданы по мотивам известных композиций и не являются продукцией упомянутых брендов.';
 
 export function Footer({ onNavigate }: { onNavigate: (sectionId?: string) => void }) {
-  const [index, setIndex] = useState(readStored);
-  const variant = FOOTER_VARIANTS[index]!;
-
-  const show = useCallback((next: number) => {
-    const i = (next + FOOTER_VARIANTS.length) % FOOTER_VARIANTS.length;
-    setIndex(i);
-    try { localStorage.setItem(STORAGE_KEY, String(i)); } catch { /* fine without persistence */ }
-  }, []);
-
   return (
-    <footer className="relative border-t border-line/60">
-      {variant.render(onNavigate)}
-
-      {/* Временный переключатель вариантов футера — убрать после выбора финального. */}
-      <div className="absolute top-2 right-4 z-10 flex items-center gap-1 rounded-full border border-line/70 bg-surface/90 px-2 py-1 text-xs text-muted shadow-sm backdrop-blur">
-        <button type="button" onClick={() => show(index - 1)} aria-label="Предыдущий вариант футера" className="flex size-7 items-center justify-center rounded-full hover:bg-gold/15 hover:text-gold">‹</button>
-        <span className="min-w-24 text-center tabular-nums" title={variant.name}>#{index + 1}/20 · {variant.name.length > 14 ? `${variant.name.slice(0, 13)}…` : variant.name}</span>
-        <button type="button" onClick={() => show(index + 1)} aria-label="Следующий вариант футера" className="flex size-7 items-center justify-center rounded-full hover:bg-gold/15 hover:text-gold">›</button>
-      </div>
+    <footer className="border-t border-line/60">
+      <Container className="py-12">
+        <div className="grid gap-8 sm:grid-cols-[1.2fr_1fr_1fr]">
+          <div>
+            <span className="font-display text-2xl">Ger<span className="text-gold">Parfume</span></span>
+            <p className="mt-3 max-w-60 text-[13px] text-muted">Ателье ароматов: знакомые композиции в вашем объёме.</p>
+          </div>
+          <div>
+            <h4 className="mb-3 text-xs font-semibold tracking-[0.2em] text-muted uppercase">Разделы</h4>
+            <nav className="flex flex-col gap-2 text-sm" aria-label="Разделы сайта">
+              {LINKS.map(([label, id]) => (
+                <button key={id} type="button" onClick={() => onNavigate(id)} className="text-left transition-colors hover:text-gold">{label}</button>
+              ))}
+            </nav>
+          </div>
+          <div>
+            <h4 className="mb-3 text-xs font-semibold tracking-[0.2em] text-muted uppercase">Связь</h4>
+            <p className="text-sm">
+              WhatsApp ·{' '}
+              <a href={whatsAppLink()} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-gold">{WHATSAPP_PHONE_DISPLAY}</a>
+            </p>
+            <p className="mt-1 text-sm text-muted">ежедневно 9:00–21:00</p>
+          </div>
+        </div>
+        <div className="mt-8 flex flex-col gap-1.5 border-t border-line/60 pt-4 text-xs text-muted sm:flex-row sm:justify-between">
+          <span>© {YEAR} GerParfume</span><span>{DISCLAIMER}</span>
+        </div>
+      </Container>
     </footer>
   );
 }

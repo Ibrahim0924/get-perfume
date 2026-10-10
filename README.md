@@ -15,7 +15,7 @@ src/
   data/       catalog.json — единственный источник правды (прайс)
   entities/   доменная модель Fragrance/Brand + нормализация и валидация JSON
   features/   catalog — фильтры, поиск, сортировка, drill-down по бренду; theme — переключение темы
-  widgets/    крупные UI-блоки страницы (Header, Hero, CatalogToolbar, BrandSection…)
+  widgets/    крупные UI-блоки страницы (Header, Hero, CatalogToolbar, BrandPreviewGrid, Footer…)
   shared/     переиспользуемые примитивы (Chip, Badge, Container) и утилиты
 ```
 
