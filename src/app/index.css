@@ -62,3 +62,7 @@
    into a dark backdrop would swallow the bottle. */
 .photo-frame { background: var(--photo-plate, var(--surface)); }
 [data-theme='dark'] .photo-frame { background: #e9e3d8; border-color: #4a453d; }
+.photo-img { mix-blend-mode: multiply; }
+/* Treatment off (data-photo-fx="off", toggle in the header): raw photo on a plain white plate. */
+[data-photo-fx='off'] .photo-img { mix-blend-mode: normal; }
+[data-photo-fx='off'] .photo-frame { background: #fff; }
