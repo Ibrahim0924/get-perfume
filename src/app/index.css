@@ -56,13 +56,6 @@
     radial-gradient(40% 40% at 85% 70%, color-mix(in oklab, var(--color-rose) 10%, transparent), transparent 70%);
 }
 
-/* Reference photos from Fragella carry their own light backdrop. In the light theme the frame is
-   transparent and the image multiplies straight into whatever is behind it, so the backdrop vanishes
-   in every context (page, card, thumbnail). The dark theme keeps a light "photo plate" — multiply
-   into a dark backdrop would swallow the bottle. */
-.photo-frame { background: var(--photo-plate, var(--surface)); }
-[data-theme='dark'] .photo-frame { background: #e9e3d8; border-color: #4a453d; }
-.photo-img { mix-blend-mode: multiply; }
-/* Treatment off (data-photo-fx="off", toggle in the header): raw photo on a plain white plate. */
-[data-photo-fx='off'] .photo-img { mix-blend-mode: normal; }
-[data-photo-fx='off'] .photo-frame { background: #fff; }
+/* Reference photos are shown as-is, on a plain white plate in both themes. */
+.photo-frame { background: #fff; }
+[data-theme='dark'] .photo-frame { border-color: #4a453d; }

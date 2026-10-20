@@ -1,4 +1,4 @@
-import { PhotoFxToggle, ThemeToggle } from '@/features/theme';
+import { ThemeToggle } from '@/features/theme';
 import { Container } from '@/shared/ui/Container';
 import { Logo } from './Logo';
 
@@ -28,7 +28,6 @@ export function Header({ onNavigate }: Props) {
             <a className="transition-colors hover:text-fg" href="#delivery" onClick={go('delivery')}>Доставка</a>
             <a className="transition-colors hover:text-fg" href="#contacts" onClick={go('contacts')}>Контакты</a>
           </nav>
-          <PhotoFxToggle />
           <ThemeToggle />
         </div>
       </Container>

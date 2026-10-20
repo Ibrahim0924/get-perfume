@@ -46,7 +46,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
 
       <article className="grid gap-10 lg:grid-cols-[22rem_1fr]">
         <figure className="flex flex-col gap-3 lg:sticky lg:top-24 lg:self-start">
-          <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-3xl border border-line p-6 [--photo-plate:var(--bg)]">
+          <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-3xl border border-line p-6">
             <FragranceImage sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={fragrance.name} className="max-h-full max-w-full" />
           </div>
           <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">
