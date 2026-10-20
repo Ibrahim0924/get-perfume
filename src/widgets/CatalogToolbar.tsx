@@ -23,11 +23,18 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
             value={filters.query}
             onChange={(e) => actions.setQuery(e.target.value)}
             placeholder="Поиск: Sauvage, Kilian, Molecule…"
-            className="h-11 w-full rounded-full border border-line bg-surface pr-4 pl-11 text-sm text-fg placeholder:text-muted/70 focus:border-gold focus:outline-none"
+            // Brand names are not dictionary words: keep phone keyboards from "correcting" them; Enter hides the keyboard.
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            autoComplete="off"
+            enterKeyHint="search"
+            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+            className="h-11 w-full rounded-full border border-line bg-surface pr-4 pl-11 text-sm text-fg placeholder:text-muted/70 focus:border-gold focus:ring-3 focus:ring-gold/30 focus:outline-none"
           />
         </label>
 
-        <div className="-mx-5 flex items-center gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0 lg:flex-wrap [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-5 flex items-center gap-2 overflow-x-auto px-5 pr-12 pb-1 [mask-image:linear-gradient(to_right,black_calc(100%-3rem),transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none] lg:flex-wrap [&::-webkit-scrollbar]:hidden">
           <fieldset className="contents">
             <legend className="sr-only">Пол</legend>
             {GENDERS.map((g) => (
@@ -48,21 +55,21 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-4 text-sm text-muted">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-muted">
         <p aria-live="polite" className="flex flex-wrap items-center gap-x-2">
           <span>{resultCount} {plural(resultCount, ['аромат', 'аромата', 'ароматов'])}</span>
           {selectedBrand && (
             <button
               type="button"
               onClick={() => actions.selectBrand(null)}
-              className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-medium text-gold hover:bg-gold/25"
+              className="-my-3 inline-flex min-h-11 items-center gap-1 py-3 text-xs font-medium text-gold [&>span:first-child]:rounded-full [&>span:first-child]:bg-gold/15 [&>span:first-child]:px-2.5 [&>span:first-child]:py-0.5 hover:[&>span:first-child]:bg-gold/25"
               aria-label={`Убрать фильтр по бренду ${selectedBrand.name}`}
             >
-              {selectedBrand.name} <span aria-hidden="true">×</span>
+              <span className="inline-flex max-w-[60vw] items-center gap-1 sm:max-w-xs"><span className="truncate">{selectedBrand.name}</span><span aria-hidden="true">×</span></span>
             </button>
           )}
           {isRefined && (
-            <button type="button" onClick={actions.clearRefinements} className="text-gold underline-offset-4 hover:underline">
+            <button type="button" onClick={actions.clearRefinements} className="-my-3 inline-flex min-h-11 items-center text-gold underline-offset-4 hover:underline">
               сбросить
             </button>
           )}
@@ -72,7 +79,7 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
           <select
             value={filters.sort}
             onChange={(e) => actions.setSort(e.target.value as SortMode)}
-            className="h-9 rounded-full border border-line bg-surface px-3 text-sm text-fg focus:border-gold focus:outline-none"
+            className="h-9 rounded-full border border-line bg-surface px-3 text-sm text-fg focus:border-gold focus:ring-3 focus:ring-gold/30 focus:outline-none"
           >
             {SORT_MODES.map((m) => (
               <option key={m} value={m}>{SORT_LABEL[m]}</option>

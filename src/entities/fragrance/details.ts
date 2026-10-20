@@ -29,7 +29,10 @@ export interface FragranceDetails {
   matchScore: number;
 }
 
-const details = raw as Record<string, FragranceDetails>;
+// Source data occasionally carries an accord with an empty name; drop those so rows never show a dangling « · ».
+const details = Object.fromEntries(
+  Object.entries(raw as Record<string, FragranceDetails>).map(([k, v]) => [k, { ...v, accords: v.accords.filter((a) => a.name.trim() !== '') }]),
+) as Record<string, FragranceDetails>;
 
 export const getDetails = (fragranceId: string): FragranceDetails | undefined => details[fragranceId];
 export const detailsCount = Object.keys(details).length;

@@ -32,7 +32,7 @@ export function FragranceRow({ fragrance, showBrand = false, onOpen }: Props) {
           <span className="block truncate font-medium text-fg transition-colors group-hover:text-gold">{fragrance.name}</span>
           {d && <span className="block truncate text-xs text-muted">{d.accords.slice(0, 3).map((a) => tAccord(a.name)).join(' · ')}</span>}
         </span>
-        <span className={cn('shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide', GENDER_TONE[fragrance.gender])}>
+        <span className={cn('shrink-0 rounded-full px-2.5 py-1 text-center text-[11px] font-semibold tracking-wide sm:w-28', GENDER_TONE[fragrance.gender])}>
           {GENDER_LABEL[fragrance.gender]}
         </span>
         <span className="ml-auto shrink-0 text-right font-display text-xl text-fg tabular-nums sm:ml-0 sm:w-24">

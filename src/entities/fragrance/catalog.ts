@@ -39,21 +39,29 @@ function parseRawCatalog(input: unknown): RawCatalog {
   };
 }
 
+/** Price-list groups that are not real brands: shown under a customer-friendly name, ids/URLs unchanged. */
+const DISPLAY_NAME: Record<string, string> = { 'Авторские': 'Авторские композиции', 'Разные': 'Без бренда' };
+export const PSEUDO_BRAND_IDS: ReadonlySet<string> = new Set(Object.keys(DISPLAY_NAME).map(slugify));
+
+/** "Brand — Name" for real brands, just the name for price-list groups like «Без бренда». */
+export const fragranceTitle = (f: Fragrance): string => (PSEUDO_BRAND_IDS.has(f.brandId) ? f.name : `${f.brand} — ${f.name}`);
+
 function normalize(source: RawCatalog): Catalog {
   const brands: Brand[] = source.brands.map((brand) => {
     const brandId = slugify(brand.name);
+    const displayName = DISPLAY_NAME[brand.name] ?? brand.name;
     const fragrances = brand.items.map(([name, gender, pricePerMl]): Fragrance => {
       if (!isGender(gender)) throw new Error(`Unknown gender "${gender}" for ${brand.name} — ${name}`);
       return {
         id: `${brandId}--${slugify(name)}--${gender}`,
-        brand: brand.name,
+        brand: displayName,
         brandId,
         name,
         gender,
         pricePerMl,
       };
     });
-    return { id: brandId, name: brand.name, fragrances };
+    return { id: brandId, name: displayName, fragrances };
   });
 
   const fragrances = brands.flatMap((b) => b.fragrances);

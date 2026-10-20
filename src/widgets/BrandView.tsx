@@ -6,7 +6,7 @@ export function BrandView({ brand, onBack, onOpen }: { brand: Brand; onBack: () 
   const count = brand.fragrances.length;
   return (
     <section className="mt-8">
-      <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-gold">
+      <button type="button" onClick={onBack} className="-my-3 inline-flex min-h-11 items-center gap-2 text-sm text-muted transition-colors hover:text-gold">
         <span aria-hidden="true">←</span> Все бренды
       </button>
       <header className="mt-4 mb-6 flex flex-wrap items-baseline justify-between gap-4">

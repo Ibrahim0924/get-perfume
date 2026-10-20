@@ -10,6 +10,7 @@ const ACCORDS: Record<string, string> = {
   chocolate: 'шоколад', coffee: 'кофе', almond: 'миндаль', coconut: 'кокос', nutty: 'ореховый', cinnamon: 'корица', cacao: 'какао', lactonic: 'молочный',
   soapy: 'мыльный', metallic: 'металлический', mineral: 'минеральный', salty: 'солёный', aldehydic: 'альдегидный', anis: 'анис', patchouli: 'пачули',
   'soft spicy': 'мягкие специи', beeswax: 'пчелиный воск', rum: 'ром', whiskey: 'виски', cherry: 'вишня', tropical: 'тропический', conifer: 'хвойный', camphor: 'камфора',
+  gourmand: 'гурманский', vodka: 'водка', cannabis: 'конопля', 'coca-cola': 'кола', sour: 'кислый', terpenic: 'смолистый', sand: 'песок', savory: 'пряный', bitter: 'горький',
 };
 const LEVELS: Record<string, string> = {
   Dominant: 'доминирующий', Prominent: 'выраженный', Moderate: 'умеренный', Subtle: 'лёгкий', Strong: 'сильный', Weak: 'слабый',

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { catalog, fragranceByPath, fragrancePath, isBrandId } from '@/entities/fragrance';
 
-export type Route = { type: 'home' } | { type: 'brand'; id: string } | { type: 'fragrance'; id: string };
+/** `missing` carries a hash that matched nothing, so the UI can say so instead of silently showing the home page. */
+export type Route = { type: 'home'; missing?: string } | { type: 'brand'; id: string } | { type: 'fragrance'; id: string };
 
 function canonicalHash(route: Route): string {
   if (route.type === 'brand') return `#/${route.id}`;
@@ -12,6 +13,8 @@ function canonicalHash(route: Route): string {
   return '';
 }
 
+const SECTION_IDS = new Set(['top', 'catalog', 'about', 'delivery', 'contacts']);
+
 function parseHash(hash: string): Route {
   const h = hash.replace(/^#\/?/, '');
   if (!h) return { type: 'home' };
@@ -20,16 +23,17 @@ function parseHash(hash: string): Route {
   const legacyFragrance = h.match(/^f\/(.+)$/)?.[1] ?? new URLSearchParams(h).get('f');
   if (legacyFragrance) {
     const id = decodeURIComponent(legacyFragrance);
-    return catalog.fragrances.some((f) => f.id === id) ? { type: 'fragrance', id } : { type: 'home' };
+    return catalog.fragrances.some((f) => f.id === id) ? { type: 'fragrance', id } : { type: 'home', missing: id };
   }
   const legacyBrand = h.match(/^b\/(.+)$/);
   if (legacyBrand) return { type: 'brand', id: decodeURIComponent(legacyBrand[1]!) };
 
   const path = decodeURIComponent(h).replace(/\/+$/, '');
+  if (SECTION_IDS.has(path)) return { type: 'home' }; // plain in-page anchors like #catalog
   const fragrance = fragranceByPath(path);
   if (fragrance) return { type: 'fragrance', id: fragrance.id };
   if (isBrandId(path)) return { type: 'brand', id: path };
-  return { type: 'home' };
+  return { type: 'home', missing: path };
 }
 
 export function useHashRoute() {

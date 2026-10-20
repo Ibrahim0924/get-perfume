@@ -8,7 +8,7 @@
   --surface: #f2ede4;
   --line: #d6cdbd;
   --fg: #2b2723;
-  --muted: #736b60;
+  --muted: #6a6257; /* 4.8:1 on --bg, 5.2:1 on --surface (WCAG AA); #736b60 was 4.2:1 */
   --accent: #9c7a3c;
   --on-accent: #f6f1e8;
   --rose: #a85a72;
@@ -59,3 +59,14 @@
 /* Reference photos are shown as-is, on a plain white plate in both themes. */
 .photo-frame { background: #fff; }
 [data-theme='dark'] .photo-frame { border-color: #4a453d; }
+
+/* Print: white paper regardless of theme; no sticky chrome, toggles or floating buttons. */
+@media print {
+  :root, [data-theme='dark'] {
+    --bg: #fff; --surface: #fff; --line: #cfc7b8; --fg: #111; --muted: #555; --accent: #8b6b35; --on-accent: #fff;
+    color-scheme: light;
+  }
+  header, footer, button[aria-label='Наверх'] { display: none !important; }
+  .photo-frame { background: #fff !important; }
+  a[href] { color: inherit; }
+}

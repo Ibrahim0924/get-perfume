@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import {
-  catalog, GENDER_LABEL, getDetails, localPhoto, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
+  catalog, fragranceTitle, GENDER_LABEL, PSEUDO_BRAND_IDS, getDetails, localPhoto, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
   type Fragrance, type Note,
 } from '@/entities/fragrance';
 import { findSimilar } from '@/features/similar';
@@ -21,9 +21,26 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
   const fragrance = catalog.fragrances.find((f) => f.id === id) ?? null;
   const d = fragrance ? getDetails(fragrance.id) : undefined;
   const similar = fragrance ? findSimilar(fragrance) : [];
+  // Without accord data there is nothing to match on; fall back to the brand (then same gender & price)
+  // so the page never ends in a dead end.
+  const related = similar.length > 0
+    ? { title: 'Похожие ароматы', note: 'Подобраны по общим аккордам и нотам композиции.', items: similar }
+    : fragrance
+      ? (() => {
+          const others = catalog.fragrances.filter((f) => f.id !== fragrance.id);
+          const sameBrand = others.filter((f) => f.brandId === fragrance.brandId);
+          const pool = sameBrand.length > 0 ? sameBrand : others.filter((f) => f.gender === fragrance.gender && f.pricePerMl === fragrance.pricePerMl);
+          return {
+            title: sameBrand.length > 0 ? `Другие ароматы ${fragrance.brand}` : 'Ароматы в той же категории',
+            note: sameBrand.length > 0 ? 'Подборка по аккордам для этого аромата пока недоступна.' : `${GENDER_LABEL[fragrance.gender]}, ${fragrance.pricePerMl} ₽ за мл.`,
+            items: pool.slice(0, 6).map((f) => ({ fragrance: f, sharedAccords: [] as string[] })),
+          };
+        })()
+      : { title: '', note: '', items: [] };
+  const hasPhoto = Boolean(fragrance && (localPhoto(fragrance.id) || d?.image || d?.imageFallback || d?.imageTransparent));
 
   useEffect(() => {
-    document.title = fragrance ? `${fragrance.name} — ${fragrance.brand} · GerParfume` : 'GerParfume';
+    document.title = fragrance ? `${fragrance.name}${PSEUDO_BRAND_IDS.has(fragrance.brandId) ? '' : ` — ${fragrance.brand}`} · GerParfume` : 'GerParfume';
     return () => { document.title = 'GerParfume — Ароматы по мотивам известных брендов'; };
   }, [fragrance]);
 
@@ -38,20 +55,30 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
 
   return (
     <Container className="pt-6 pb-20 sm:pt-8">
-      <nav className="mb-6 text-sm text-muted" aria-label="Хлебные крошки">
-        <button type="button" onClick={onBack} className="transition-colors hover:text-gold">← Каталог</button>
+      <nav className="mb-6 flex items-center text-sm text-muted" aria-label="Хлебные крошки">
+        <button type="button" onClick={onBack} className="-my-3 inline-flex min-h-11 items-center transition-colors hover:text-gold">← Каталог</button>
         <span className="mx-2" aria-hidden="true">/</span>
-        <span className="text-fg">{fragrance.brand}</span>
+        <a href={`#/${fragrance.brandId}`} className="-my-3 inline-flex min-h-11 items-center text-fg underline-offset-4 transition-colors hover:text-gold hover:underline">{fragrance.brand}</a>
       </nav>
 
-      <article className="grid gap-10 lg:grid-cols-[22rem_1fr]">
-        <figure className="flex flex-col gap-3 lg:sticky lg:top-24 lg:self-start">
-          <div className="photo-frame flex aspect-[4/5] items-center justify-center rounded-3xl border border-line p-6">
-            <FragranceImage sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={fragrance.name} className="max-h-full max-w-full" />
-          </div>
+      <article className="grid gap-10 md:grid-cols-[17rem_1fr] lg:grid-cols-[22rem_1fr]">
+        <figure className="flex flex-col gap-3 md:self-start md:[@media(min-height:40rem)]:sticky md:[@media(min-height:40rem)]:top-24">
+          {hasPhoto ? (
+            <div className="photo-frame flex aspect-[5/4] items-center justify-center rounded-3xl border border-line p-6 md:aspect-[4/5]">
+              <FragranceImage sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={fragrance.name} className="max-h-full max-w-full" />
+            </div>
+          ) : (
+            // No reference photo at all: a compact placeholder instead of a screen-tall empty frame.
+            <div className="flex h-32 items-center justify-center gap-3 rounded-3xl border border-dashed border-line text-muted md:h-40">
+              <FragranceImage sources={[]} alt="" className="size-12" />
+              <span className="text-sm">Фото флакона пока нет</span>
+            </div>
+          )}
           <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">
             <span aria-hidden="true" className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-current text-[9px] font-bold">i</span>
-            Изображение приведено для наглядности — оригинальный флакон. Аромат по мотивам поставляется в нашей таре и может отличаться внешне.
+            {hasPhoto
+              ? 'Изображение приведено для наглядности — оригинальный флакон. Аромат по мотивам поставляется в нашей таре и может отличаться внешне.'
+              : 'Аромат по мотивам поставляется в нашей таре. Пришлём фото в WhatsApp по запросу.'}
           </figcaption>
         </figure>
 
@@ -61,11 +88,17 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="font-display text-3xl text-gold">{formatPrice(fragrance.pricePerMl)}<span className="ml-1 text-sm text-muted">/ мл</span></span>
             <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', GENDER_TONE[fragrance.gender])}>{GENDER_LABEL[fragrance.gender]}</span>
+            {/* Quick order next to the price, so the CTA is on the first screen; the detailed block below stays. */}
+            <WhatsAppButton
+              className="h-11 basis-full justify-center sm:ml-auto sm:basis-auto"
+              label="Заказать в WhatsApp"
+              text={`Здравствуйте! Хочу заказать аромат ${fragranceTitle(fragrance)} (${fragrance.pricePerMl} ₽/мл).`}
+            />
           </div>
 
           {d ? (
             <>
-              <dl className="mt-7 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+              <dl className="mt-7 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3">
                 <Meta label="Оригинал" value={`${d.brand} — ${d.name}`} wide />
                 <Meta label="Год" value={d.year} />
                 <Meta label="Тип" value={tOil(d.oilType)} />
@@ -122,7 +155,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
                 <WhatsAppButton
                   className="ml-auto"
                   label="Заказать в WhatsApp"
-                  text={`Здравствуйте! Хочу заказать аромат ${fragrance.brand} — ${fragrance.name} (${fragrance.pricePerMl} ₽/мл).`}
+                  text={`Здравствуйте! Хочу заказать аромат ${fragranceTitle(fragrance)} (${fragrance.pricePerMl} ₽/мл).`}
                 />
               </div>
 
@@ -138,7 +171,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
                 <WhatsAppButton
                   className="ml-auto"
                   label="Заказать в WhatsApp"
-                  text={`Здравствуйте! Хочу заказать аромат ${fragrance.brand} — ${fragrance.name} (${fragrance.pricePerMl} ₽/мл).`}
+                  text={`Здравствуйте! Хочу заказать аромат ${fragranceTitle(fragrance)} (${fragrance.pricePerMl} ₽/мл).`}
                 />
               </div>
             </>
@@ -146,12 +179,12 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
         </div>
       </article>
 
-      {similar.length > 0 && (
-        <section className="mt-16 border-t border-line/60 pt-10" aria-label="Похожие ароматы">
-          <h2 className="font-display text-3xl sm:text-4xl">Похожие ароматы</h2>
-          <p className="mt-2 text-sm text-muted">Подобраны по общим аккордам и нотам композиции.</p>
+      {related.items.length > 0 && (
+        <section className="mt-16 border-t border-line/60 pt-10" aria-label={related.title}>
+          <h2 className="font-display text-3xl sm:text-4xl">{related.title}</h2>
+          <p className="mt-2 text-sm text-muted">{related.note}</p>
           <ul className="mt-7 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-            {similar.map((s) => (
+            {related.items.map((s) => (
               <li key={s.fragrance.id}>
                 <button
                   type="button"
@@ -161,7 +194,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
                   <SimilarThumb id={s.fragrance.id} name={s.fragrance.name} />
                   <span className="mt-3 block text-[10px] tracking-[0.15em] text-muted uppercase">{s.fragrance.brand}</span>
                   <span className="mt-0.5 line-clamp-2 text-sm leading-snug font-medium group-hover:text-gold">{s.fragrance.name}</span>
-                  <span className="mt-1.5 line-clamp-1 text-[11px] text-muted">{s.sharedAccords.slice(0, 3).map(tAccord).join(' · ')}</span>
+                  {s.sharedAccords.length > 0 && <span className="mt-1.5 line-clamp-1 text-[11px] text-muted">{s.sharedAccords.slice(0, 3).map(tAccord).join(' · ')}</span>}
                   <span className="mt-2 font-display text-lg">{formatPrice(s.fragrance.pricePerMl)}<span className="ml-1 text-[10px] text-muted">/мл</span></span>
                 </button>
               </li>
@@ -187,7 +220,7 @@ function Meta({ label, value, wide = false }: { label: string; value: string | n
   return (
     <div className={wide ? 'col-span-full min-w-0' : 'min-w-0'}>
       <dt className="text-[11px] tracking-[0.15em] text-muted uppercase">{label}</dt>
-      <dd className="truncate font-medium" title={value}>{value}</dd>
+      <dd className="font-medium break-words">{value}</dd>
     </div>
   );
 }

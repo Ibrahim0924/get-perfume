@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/shared/lib/cn';
 
 interface Props {
@@ -11,8 +11,16 @@ interface Props {
 /** Remote reference photo; walks the source list on error, then shows a bottle glyph. */
 export function FragranceImage({ sources, alt, className }: Props) {
   const [stage, setStage] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const ref = useRef<HTMLImageElement>(null);
   const urls = sources.filter((s): s is string => Boolean(s));
   const url = urls[stage] ?? null;
+
+  // Cached images may complete before React attaches onLoad.
+  useEffect(() => {
+    if (ref.current?.complete && ref.current.naturalWidth > 0) setLoaded(true);
+  }, [url]);
+
   if (!url) {
     return (
       <div className={cn('flex items-center justify-center text-muted/60', className)} aria-hidden="true">
@@ -22,13 +30,20 @@ export function FragranceImage({ sources, alt, className }: Props) {
   }
   return (
     <img
+      ref={ref}
       src={url}
       alt={alt}
       loading="lazy"
       decoding="async"
       referrerPolicy="no-referrer"
-      onError={() => setStage((s) => s + 1)}
-      className={cn('object-contain', className)}
+      onLoad={() => setLoaded(true)}
+      onError={() => { setLoaded(false); setStage((s) => s + 1); }}
+      className={cn(
+        'object-contain transition-opacity duration-300',
+        // Skeleton while the file is in flight: a soft pulsing tint instead of an empty frame.
+        loaded ? 'opacity-100' : 'animate-pulse rounded-lg bg-line/60 opacity-70',
+        className,
+      )}
     />
   );
 }

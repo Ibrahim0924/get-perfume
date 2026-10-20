@@ -3,16 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#ebe5da" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1c1b18" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ebe5da" />
     <meta name="description" content="GerParfume — ароматы по мотивам известных брендов. Прайс-лист, цена за миллилитр." />
     <title>GerParfume — Ароматы по мотивам известных брендов</title>
+    <!-- Link preview in WhatsApp / Telegram / social networks -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GerParfume" />
+    <meta property="og:title" content="GerParfume — ароматы по мотивам известных брендов" />
+    <meta property="og:description" content="336 ароматов от 112 брендов на разлив. Цена за миллилитр, заказ в WhatsApp." />
+    <meta property="og:url" content="https://ibrahim0924.github.io/get-perfume/" />
+    <meta property="og:image" content="https://ibrahim0924.github.io/get-perfume/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="./favicon-48.png" type="image/png" sizes="48x48" />
     <link rel="icon" href="./favicon.png" type="image/png" sizes="512x512" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      /* Critical styles: page colour and a boot placeholder before the app's CSS/JS arrive (slow network, JS off). */
+      html { background: #ebe5da; color: #2b2723; }
+      html[data-theme='dark'] { background: #1c1b18; color: #e7e0d3; }
+      .boot { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; font: 15px/1.5 Manrope, system-ui, sans-serif; }
+      .boot-logo { font: 500 34px/1 'Cormorant Garamond', Georgia, serif; }
+      .boot-logo b { color: #9c7a3c; font-weight: 500; }
+      .boot-note { opacity: .7; }
+      .boot a { color: #9c7a3c; font-weight: 600; }
+    </style>
   </head>
   <body>
     <script>
@@ -22,10 +42,20 @@
           var t = localStorage.getItem('gerparfume:theme');
           if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
           document.documentElement.dataset.theme = t;
+          // Browser chrome (iOS Safari / Android) follows the chosen theme, not just the system one.
+          document.querySelector('meta[name="theme-color"]').content = t === 'dark' ? '#1c1b18' : '#ebe5da';
         } catch (e) { document.documentElement.dataset.theme = 'light'; }
       })();
     </script>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot">
+        <div class="boot-logo">Ger<b>Parfume</b></div>
+        <p class="boot-note">Загружаем каталог…</p>
+        <noscript>
+          <p>Для работы каталога нужен JavaScript. Включите его в настройках браузера<br />или напишите нам в WhatsApp: <a href="https://wa.me/79677775727">8 967 777-57-27</a></p>
+        </noscript>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

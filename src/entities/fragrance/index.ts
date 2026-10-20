@@ -1,5 +1,5 @@
 export * from './types';
-export { catalog } from './catalog';
+export { catalog, fragranceTitle, PSEUDO_BRAND_IDS } from './catalog';
 export { GENDER_LABEL, GENDER_SHORT_LABEL } from './labels';
 export { getDetails, detailsCount, type FragranceDetails, type Note, type Accord } from './details';
 export { localPhoto } from './photos';

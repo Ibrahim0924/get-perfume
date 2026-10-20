@@ -21,9 +21,9 @@ export function Footer({ onNavigate }: { onNavigate: (sectionId?: string) => voi
           </div>
           <div>
             <h4 className="mb-3 text-xs font-semibold tracking-[0.2em] text-muted uppercase">Разделы</h4>
-            <nav className="flex flex-col gap-2 text-sm" aria-label="Разделы сайта">
+            <nav className="flex flex-col text-sm" aria-label="Разделы сайта">
               {LINKS.map(([label, id]) => (
-                <button key={id} type="button" onClick={() => onNavigate(id)} className="text-left transition-colors hover:text-gold">{label}</button>
+                <button key={id} type="button" onClick={() => onNavigate(id)} className="-my-2 inline-flex min-h-11 items-center self-start py-3 text-left transition-colors hover:text-gold">{label}</button>
               ))}
             </nav>
           </div>
@@ -31,7 +31,7 @@ export function Footer({ onNavigate }: { onNavigate: (sectionId?: string) => voi
             <h4 className="mb-3 text-xs font-semibold tracking-[0.2em] text-muted uppercase">Связь</h4>
             <p className="text-sm">
               WhatsApp ·{' '}
-              <a href={whatsAppLink()} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-gold">{WHATSAPP_PHONE_DISPLAY}</a>
+              <a href={whatsAppLink()} target="_blank" rel="noopener noreferrer" className="-my-3 inline-flex min-h-11 items-center font-semibold hover:text-gold">{WHATSAPP_PHONE_DISPLAY}</a>
             </p>
             <p className="mt-1 text-sm text-muted">ежедневно 9:00–21:00</p>
           </div>

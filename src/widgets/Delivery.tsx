@@ -9,7 +9,7 @@ const OPTIONS = [
 
 export function Delivery() {
   return (
-    <section id="delivery" className="scroll-mt-16 border-t border-line/60">
+    <section id="delivery" className="scroll-mt-28 border-t md:scroll-mt-16 border-line/60">
       <Container className="py-14 sm:py-20">
         <h2 className="font-display text-3xl text-fg sm:text-4xl">Доставка и оплата</h2>
         <div className="mt-8 grid gap-6 sm:mt-10 sm:grid-cols-2 lg:grid-cols-4">
