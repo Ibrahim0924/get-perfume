@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   catalog, fragranceTitle, GENDER_LABEL, PSEUDO_BRAND_IDS, getDetails, localPhoto, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
   type Fragrance, type Note,
@@ -219,6 +219,19 @@ function Meta({ label, value, wide = false }: { label: string; value: string | n
   );
 }
 
+/** Note picture from the remote CDN; a missing or unreachable one becomes a neat initial, never a broken-image icon. */
+function NoteIcon({ image, name }: { image: string | null; name: string }) {
+  const [failed, setFailed] = useState(false);
+  if (image && !failed) {
+    return <img src={image} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} className="size-5 shrink-0 rounded-full bg-line/40 object-cover" />;
+  }
+  return (
+    <span aria-hidden="true" className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-gold/15 text-[10px] font-semibold text-gold uppercase">
+      {name.trim().charAt(0)}
+    </span>
+  );
+}
+
 function NoteTier({ title, notes }: { title: string; notes: Note[] }) {
   if (notes.length === 0) return null;
   return (
@@ -227,7 +240,7 @@ function NoteTier({ title, notes }: { title: string; notes: Note[] }) {
       <ul className="flex flex-wrap gap-2">
         {notes.map((n) => (
           <li key={n.name} className="flex items-center gap-1.5 rounded-full border border-line bg-bg py-1 pr-3 pl-1 text-xs">
-            {n.image ? <img src={n.image} alt="" loading="lazy" referrerPolicy="no-referrer" className="size-5 rounded-full object-cover" /> : <span className="size-5 rounded-full bg-gold/30" />}
+            <NoteIcon image={n.image} name={tNote(n.name)} />
             {tNote(n.name)}
           </li>
         ))}
