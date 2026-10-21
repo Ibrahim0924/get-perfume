@@ -4,6 +4,7 @@ import { cn } from '@/shared/lib/cn';
 import { plural } from '@/shared/lib/format';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
 import { ShowMore } from '@/shared/ui/ShowMore';
+import { Arrow } from '@/shared/ui/Arrow';
 
 const GENDER_TAG: Record<Gender, { label: string; tone: string }> = {
   female: { label: 'женские', tone: 'bg-rose/15 text-rose' },
@@ -72,7 +73,7 @@ function BrandPreviewCard({ brand, onSelect }: { brand: Brand; onSelect: (id: st
         ))}
       </span>
       <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-gold">
-        Смотреть бренд <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+        Смотреть бренд <Arrow direction="right" className="size-3.5 transition-transform group-hover:translate-x-1" />
       </span>
     </button>
   );

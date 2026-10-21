@@ -9,6 +9,7 @@ import { cn } from '@/shared/lib/cn';
 import { Container } from '@/shared/ui/Container';
 import { WhatsAppButton, WHATSAPP_PHONE_DISPLAY } from '@/shared/ui/WhatsAppButton';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
+import { Arrow } from '@/shared/ui/Arrow';
 
 const STRENGTH_WIDTH: Record<string, string> = { Dominant: '100%', Prominent: '80%', Moderate: '55%', Subtle: '30%' };
 const GENDER_TONE: Record<Fragrance['gender'], string> = {
@@ -48,7 +49,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
     return (
       <Container className="py-24 text-center">
         <p className="font-display text-3xl">Аромат не найден</p>
-        <button type="button" onClick={onBack} className="mt-6 h-11 rounded-full border border-gold px-6 text-sm font-semibold text-gold hover:bg-gold hover:text-on-accent">← В каталог</button>
+        <button type="button" onClick={onBack} className="mt-6 inline-flex h-11 items-center gap-2 rounded-full border border-gold px-6 text-sm font-semibold text-gold hover:bg-gold hover:text-on-accent"><Arrow /> В каталог</button>
       </Container>
     );
   }
@@ -56,7 +57,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
   return (
     <Container className="pt-6 pb-20 sm:pt-8">
       <nav className="mb-6 flex items-center text-sm text-muted" aria-label="Хлебные крошки">
-        <button type="button" onClick={onBack} className="-my-3 inline-flex min-h-11 items-center transition-colors hover:text-gold">← Каталог</button>
+        <button type="button" onClick={onBack} className="-my-3 inline-flex min-h-11 items-center gap-1.5 transition-colors hover:text-gold"><Arrow className="size-3.5" /> Каталог</button>
         <span className="mx-2" aria-hidden="true">/</span>
         <a href={`#/${fragrance.brandId}`} className="-my-3 inline-flex min-h-11 items-center text-fg underline-offset-4 transition-colors hover:text-gold hover:underline">{fragrance.brand}</a>
       </nav>

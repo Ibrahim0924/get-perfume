@@ -2,6 +2,7 @@ import { catalog, GENDER_LABEL, GENDERS, type Brand } from '@/entities/fragrance
 import { SORT_LABEL, SORT_MODES, type CatalogActions, type CatalogFilters, type SortMode } from '@/features/catalog';
 import { plural } from '@/shared/lib/format';
 import { Chip } from '@/shared/ui/Chip';
+import { Arrow } from '@/shared/ui/Arrow';
 import { SelectMenu } from '@/shared/ui/SelectMenu';
 
 const SORT_SHORT: Partial<Record<SortMode, string>> = { 'price-asc': 'Дешевле', 'price-desc': 'Дороже' };
@@ -26,9 +27,7 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
             onClick={() => actions.selectBrand(null)}
             className="inline-flex h-10 items-center gap-2 rounded-full border border-gold/60 bg-gold/10 pr-4 pl-3 text-sm font-semibold text-gold transition-colors hover:bg-gold/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
           >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M19 12H5m6-6-6 6 6 6" />
-            </svg>
+            <Arrow />
             Все бренды
           </button>
           <h2 className="font-display mt-3 truncate text-4xl leading-tight text-fg sm:text-5xl">{selectedBrand.name}</h2>

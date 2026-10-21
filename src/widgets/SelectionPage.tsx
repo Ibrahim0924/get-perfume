@@ -8,6 +8,7 @@ import { useDebouncedValue } from '@/shared/lib/useDebouncedValue';
 import { Container } from '@/shared/ui/Container';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
 import { firstStep, ShowMore } from '@/shared/ui/ShowMore';
+import { Arrow } from '@/shared/ui/Arrow';
 
 const FRAGRANCE_NOUN: [string, string, string] = ['аромата', 'ароматов', 'ароматов'];
 
@@ -65,7 +66,7 @@ export function SelectionPage({ onBack }: { onBack: () => void }) {
   return (
     <Container className={cn('pt-6 pb-16', ids.size > 0 && 'pb-36')}>
       <button type="button" onClick={onBack} className="-my-3 inline-flex min-h-11 items-center gap-2 text-sm text-muted transition-colors hover:text-gold">
-        <span aria-hidden="true">←</span> Каталог
+        <Arrow className="size-3.5" /> Каталог
       </button>
       <h1 className="font-display mt-3 text-4xl leading-tight sm:text-5xl">Подборка</h1>
       <p className="mt-2 max-w-xl text-sm text-muted">
