@@ -23,6 +23,11 @@ export function App() {
   }, [route]);
   const landOnCatalog = useRef(false);
   const onFragrancePage = route.type === 'fragrance';
+  // The catalogue page under an open fragrance (home or a brand). It stays put while the fragrance is
+  // shown, so Back finds the same brand, the same opened list and the same scroll position.
+  const [catalogRoute, setCatalogRoute] = useState(route);
+  if (!onFragrancePage && route !== catalogRoute) setCatalogRoute(route);
+  const catalogBrandId = catalogRoute.type === 'brand' ? catalogRoute.id : null;
 
   // The catalog stays mounted (hidden) behind the fragrance page so filters and
   // scroll position survive navigation; scroll is saved/restored manually.
@@ -115,8 +120,8 @@ export function App() {
           </div>
         )}
         {/* The big intro belongs to the start page only; a brand page opens straight on its fragrances. */}
-        {route.type !== 'brand' && <Hero />}
-        <CatalogSection onOpen={openFragrance} brandId={route.type === 'brand' ? route.id : null} onSelectBrand={selectBrand} />
+        {catalogBrandId === null && <Hero />}
+        <CatalogSection onOpen={openFragrance} brandId={catalogBrandId} onSelectBrand={selectBrand} />
         <About />
         <Delivery />
         <Contacts />
