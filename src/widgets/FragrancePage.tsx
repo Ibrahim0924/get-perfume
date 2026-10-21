@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  catalog, fragranceTitle, GENDER_LABEL, PSEUDO_BRAND_IDS, getDetails, localPhoto, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
+  catalog, fragranceTitle, GENDER_LABEL, PSEUDO_BRAND_IDS, getDetails, localPhoto, photoFillsFrame, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
   type Fragrance, type Note,
 } from '@/entities/fragrance';
 import { findSimilar } from '@/features/similar';
@@ -64,8 +64,18 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
       <article className="grid gap-10 md:grid-cols-[17rem_1fr] lg:grid-cols-[22rem_1fr]">
         <figure className="flex flex-col gap-3 md:self-start md:[@media(min-height:40rem)]:sticky md:[@media(min-height:40rem)]:top-24">
           {hasPhoto ? (
-            <div className="photo-frame flex aspect-[5/4] items-center justify-center rounded-3xl border border-line p-6 md:aspect-[4/5]">
-              <FragranceImage sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={fragrance.name} className="max-h-full max-w-full" />
+            // A photo with its own backdrop gets a frame of its own (square) shape and fills it edge to edge.
+            <div
+              className={cn(
+                'photo-frame flex items-center justify-center overflow-hidden rounded-3xl border border-line',
+                photoFillsFrame(fragrance.id) ? 'aspect-square' : 'aspect-[5/4] p-6 md:aspect-[4/5]',
+              )}
+            >
+              <FragranceImage
+                sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]}
+                alt={fragrance.name}
+                {...(photoFillsFrame(fragrance.id) ? { fill: true } : { className: 'max-h-full max-w-full' })}
+              />
             </div>
           ) : (
             // No reference photo at all: a compact placeholder instead of a screen-tall empty frame.
@@ -203,8 +213,12 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
 function SimilarThumb({ id, name }: { id: string; name: string }) {
   const d = getDetails(id);
   return (
-    <span className="photo-frame flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-line/70 p-2">
-      <FragranceImage sources={[localPhoto(id), d?.image, d?.imageFallback, d?.imageTransparent]} alt={name} className="max-h-full max-w-full" />
+    <span className={cn('photo-frame flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-line/70', !photoFillsFrame(id) && 'p-2')}>
+      <FragranceImage
+        sources={[localPhoto(id), d?.image, d?.imageFallback, d?.imageTransparent]}
+        alt={name}
+        {...(photoFillsFrame(id) ? { fill: true } : { className: 'max-h-full max-w-full' })}
+      />
     </span>
   );
 }

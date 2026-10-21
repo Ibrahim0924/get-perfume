@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { catalog, GENDERS, getDetails, localPhoto, type Brand, type Gender } from '@/entities/fragrance';
+import { catalog, GENDERS, getDetails, localPhoto, photoFillsFrame, type Brand, type Gender } from '@/entities/fragrance';
 import { cn } from '@/shared/lib/cn';
 import { plural } from '@/shared/lib/format';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
@@ -52,7 +52,11 @@ function BrandPreviewCard({ brand, onSelect }: { brand: Brand; onSelect: (id: st
           const d = getDetails(f.id);
           return (
             <span key={f.id} className="photo-frame flex size-16 items-center justify-center overflow-hidden rounded-2xl border border-line/70">
-              <FragranceImage sources={[localPhoto(f.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt="" className="size-12" />
+              <FragranceImage
+                sources={[localPhoto(f.id), d?.image, d?.imageFallback, d?.imageTransparent]}
+                alt=""
+                {...(photoFillsFrame(f.id) ? { fill: true } : { className: 'size-12' })}
+              />
             </span>
           );
         })}

@@ -6,10 +6,12 @@ interface Props {
   sources: (string | null | undefined)[];
   alt: string;
   className?: string;
+  /** For photos with their own backdrop: fill the (padding-free, same-shaped) frame edge to edge. */
+  fill?: boolean;
 }
 
 /** Remote reference photo; walks the source list on error, then shows a bottle glyph. */
-export function FragranceImage({ sources, alt, className }: Props) {
+export function FragranceImage({ sources, alt, className, fill }: Props) {
   const [stage, setStage] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
@@ -39,9 +41,10 @@ export function FragranceImage({ sources, alt, className }: Props) {
       onLoad={() => setLoaded(true)}
       onError={() => { setLoaded(false); setStage((s) => s + 1); }}
       className={cn(
-        'object-contain transition-opacity duration-300',
+        'transition-opacity duration-300',
+        fill ? 'size-full object-cover' : 'object-contain',
         // Skeleton while the file is in flight: a soft pulsing tint instead of an empty frame.
-        loaded ? 'opacity-100' : 'animate-pulse rounded-lg bg-line/60 opacity-70',
+        loaded ? 'opacity-100' : cn('animate-pulse bg-line/60 opacity-70', !fill && 'rounded-lg'),
         className,
       )}
     />

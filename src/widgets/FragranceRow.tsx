@@ -1,4 +1,4 @@
-import { GENDER_LABEL, getDetails, localPhoto, tAccord, type Fragrance } from '@/entities/fragrance';
+import { GENDER_LABEL, getDetails, localPhoto, photoFillsFrame, tAccord, type Fragrance } from '@/entities/fragrance';
 import { formatPrice } from '@/shared/lib/format';
 import { cn } from '@/shared/lib/cn';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
@@ -25,7 +25,11 @@ export function FragranceRow({ fragrance, showBrand = false, onOpen }: Props) {
         className="group flex w-full flex-wrap items-center gap-x-4 gap-y-1.5 py-2.5 text-left sm:flex-nowrap sm:py-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
       >
         <span className="photo-frame flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line/70">
-          <FragranceImage sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]} alt="" className="size-10" />
+          <FragranceImage
+            sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]}
+            alt=""
+            {...(photoFillsFrame(fragrance.id) ? { fill: true } : { className: 'size-10' })}
+          />
         </span>
         <span className="min-w-0 flex-1 basis-[calc(100%-4rem)] sm:basis-auto">
           {showBrand && <span className="block text-xs tracking-[0.15em] text-muted uppercase">{fragrance.brand}</span>}
