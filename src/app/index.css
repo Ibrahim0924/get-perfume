@@ -46,7 +46,7 @@
 
 @layer base {
   html { scroll-behavior: smooth; }
-  body { @apply bg-bg font-sans text-fg antialiased transition-colors duration-300; }
+  body { @apply bg-bg font-sans text-fg antialiased; }
   ::selection { background: color-mix(in oklab, var(--color-gold) 40%, transparent); }
 }
 
@@ -70,3 +70,7 @@
   .photo-frame { background: #fff !important; }
   a[href] { color: inherit; }
 }
+
+/* Theme swap: everything changes in one frame (see applyTheme), then the whole page cross-fades. */
+.theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 280ms; animation-timing-function: ease; }
