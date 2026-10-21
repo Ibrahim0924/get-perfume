@@ -10,8 +10,6 @@ import { Container } from '@/shared/ui/Container';
 import { WhatsAppButton, WHATSAPP_PHONE_DISPLAY } from '@/shared/ui/WhatsAppButton';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
 
-/** Brand id of our own compositions ("Авторские" in the price list). */
-const OWN_BRAND_ID = 'avtorskie';
 const STRENGTH_WIDTH: Record<string, string> = { Dominant: '100%', Prominent: '80%', Moderate: '55%', Subtle: '30%' };
 const GENDER_TONE: Record<Fragrance['gender'], string> = {
   female: 'bg-rose/15 text-rose',
@@ -40,8 +38,6 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
         })()
       : { title: '', note: '', items: [] };
   const hasPhoto = Boolean(fragrance && (localPhoto(fragrance.id) || d?.image || d?.imageFallback || d?.imageTransparent));
-  // Our own compositions are photographed in our own bottle — not a reference shot of someone else's.
-  const isOwn = fragrance?.brandId === OWN_BRAND_ID;
 
   useEffect(() => {
     document.title = fragrance ? `${fragrance.name}${PSEUDO_BRAND_IDS.has(fragrance.brandId) ? '' : ` — ${fragrance.brand}`} · GerParfume` : 'GerParfume';
@@ -80,9 +76,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
           )}
           <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">
             <span aria-hidden="true" className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-current text-[9px] font-bold">i</span>
-            {isOwn && hasPhoto
-              ? 'Авторская композиция GerParfume — на фото наш флакон.'
-              : hasPhoto
+            {hasPhoto
               ? 'Изображение приведено для наглядности — оригинальный флакон. Аромат по мотивам поставляется в нашей таре и может отличаться внешне.'
               : 'Аромат по мотивам поставляется в нашей таре. Пришлём фото в WhatsApp по запросу.'}
           </figcaption>
