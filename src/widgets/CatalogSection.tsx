@@ -17,15 +17,9 @@ interface Props {
 export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
   const { filters, fragrances, selectedBrand, view, isRefined, actions } = useCatalogFilters();
 
-  // Mirror the route into filter state (single source of truth is the hash).
+  // Mirror the route into filter state (single source of truth is the hash). Scrolling is App's job.
   useEffect(() => {
-    if (filters.brandId !== brandId) {
-      actions.selectBrand(brandId);
-      // The list is swapped for the brand view (or back): show it from its top straight away,
-      // without a visible scroll. Leaving a brand only moves up if the catalog top is off-screen.
-      const catalogEl = document.getElementById('catalog');
-      if (catalogEl && (brandId || catalogEl.getBoundingClientRect().top < 0)) catalogEl.scrollIntoView({ behavior: 'instant', block: 'start' });
-    }
+    if (filters.brandId !== brandId) actions.selectBrand(brandId);
   }, [brandId, filters.brandId, actions]);
 
   const routedActions = useMemo(() => ({ ...actions, selectBrand: onSelectBrand }), [actions, onSelectBrand]);

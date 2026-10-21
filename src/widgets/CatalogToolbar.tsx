@@ -1,10 +1,11 @@
 import { catalog, GENDER_LABEL, GENDERS, type Brand } from '@/entities/fragrance';
-import { SORT_LABEL, SORT_MODES, type CatalogActions, type CatalogFilters } from '@/features/catalog';
+import { SORT_LABEL, SORT_MODES, type CatalogActions, type CatalogFilters, type SortMode } from '@/features/catalog';
 import { plural } from '@/shared/lib/format';
 import { Chip } from '@/shared/ui/Chip';
 import { SelectMenu } from '@/shared/ui/SelectMenu';
 
-const SORT_OPTIONS = SORT_MODES.map((m) => ({ value: m, label: SORT_LABEL[m] }));
+const SORT_SHORT: Partial<Record<SortMode, string>> = { 'price-asc': 'Дешевле', 'price-desc': 'Дороже' };
+const SORT_OPTIONS = SORT_MODES.map((m) => ({ value: m, label: SORT_LABEL[m], short: SORT_SHORT[m] }));
 
 interface Props {
   filters: CatalogFilters;
@@ -18,15 +19,19 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
   return (
     <div className="-mx-5 border-b border-line/60 bg-bg/90 px-5 py-4 backdrop-blur-md sm:-mx-8 sm:px-8 lg:sticky lg:top-16 lg:z-20">
       {selectedBrand && (
-        // The brand you are in, as its own bar: always visible, one obvious way back to all brands.
-        <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface py-2.5 pr-2.5 pl-4">
-          <div className="min-w-0">
-            <p className="text-[11px] tracking-[0.18em] text-muted uppercase">Бренд</p>
-            <h2 className="font-display truncate text-2xl leading-tight text-fg sm:text-3xl">{selectedBrand.name}</h2>
-          </div>
-          <Chip className="shrink-0" onClick={() => actions.selectBrand(null)} aria-pressed={undefined}>
-            Все бренды <span aria-hidden="true" className="text-base leading-none">×</span>
-          </Chip>
+        // App-style page header for a brand: a clear way back first, then the brand name.
+        <div className="mb-5">
+          <button
+            type="button"
+            onClick={() => actions.selectBrand(null)}
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-gold/60 bg-gold/10 pr-4 pl-3 text-sm font-semibold text-gold transition-colors hover:bg-gold/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+          >
+            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 12H5m6-6-6 6 6 6" />
+            </svg>
+            Все бренды
+          </button>
+          <h2 className="font-display mt-3 truncate text-4xl leading-tight text-fg sm:text-5xl">{selectedBrand.name}</h2>
         </div>
       )}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -70,19 +75,25 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
         </div>
       </div>
 
-      {/* Sort stays pinned right; only the count/reset side may wrap, so nothing jumps between lines. */}
-      <div className="mt-3 flex items-center justify-between gap-3 text-sm text-muted">
-        <p aria-live="polite" className="flex min-w-0 flex-wrap items-center gap-x-2">
-          <span>{resultCount} {plural(resultCount, ['аромат', 'аромата', 'ароматов'])}</span>
+      {/* Sort stays pinned right. With filters on, phones get a deliberate second line: the count above,
+          the reset pill on the sort's line; wider screens keep everything on one line. */}
+      <div className="mt-3 flex items-end justify-between gap-3 text-sm text-muted sm:items-center">
+        <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <p aria-live="polite">{resultCount} {plural(resultCount, ['аромат', 'аромата', 'ароматов'])}</p>
           {isRefined && (
-            <>
-              <span aria-hidden="true">·</span>
-              <button type="button" onClick={actions.clearRefinements} className="-my-3 inline-flex min-h-11 items-center font-semibold text-gold underline-offset-4 hover:underline">
-                сбросить фильтры
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={actions.clearRefinements}
+              aria-label="Сбросить фильтры"
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full whitespace-nowrap border border-gold/60 bg-gold/10 pr-4 pl-3 text-sm font-semibold text-gold transition-colors hover:bg-gold/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            >
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+              Сбросить
+            </button>
           )}
-        </p>
+        </div>
         <div className="flex shrink-0 items-center gap-2">
           <span aria-hidden="true" className="hidden sm:inline">Сортировка</span>
           <SelectMenu

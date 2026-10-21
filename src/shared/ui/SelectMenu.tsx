@@ -8,6 +8,8 @@ const GAP = 8;
 interface Option<T extends string> {
   value: T;
   label: string;
+  /** Shorter text for the button itself (the menu shows the full label). */
+  short?: string;
 }
 
 interface Props<T extends string> {
@@ -126,14 +128,15 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
           open ? 'border-gold' : 'border-line',
         )}
       >
-        {icon && <span aria-hidden="true" className="text-muted">{icon}</span>}
+        {/* The icon gives way on the narrowest phones so the row never overflows. */}
+        {icon && <span aria-hidden="true" className="text-muted max-[359px]:hidden">{icon}</span>}
         {/* Every label sits in the same grid cell, so the button is always as wide as the longest one
             and does not jump (or rewrap the row) when the choice changes. */}
         <span className="grid text-left">
           {options.map((o) => (
-            <span key={o.value} aria-hidden="true" className="invisible col-start-1 row-start-1">{o.label}</span>
+            <span key={o.value} aria-hidden="true" className="invisible col-start-1 row-start-1">{o.short ?? o.label}</span>
           ))}
-          <span key={value} className={cn('col-start-1 row-start-1', picked && 'label-swap')}>{options[selectedIndex]?.label}</span>
+          <span key={value} className={cn('col-start-1 row-start-1', picked && 'label-swap')}>{options[selectedIndex]?.short ?? options[selectedIndex]?.label}</span>
         </span>
         <svg
           aria-hidden="true"

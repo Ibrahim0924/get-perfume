@@ -27,18 +27,26 @@ export function App() {
   // The catalog stays mounted (hidden) behind the fragrance page so filters and
   // scroll position survive navigation; scroll is saved/restored manually.
   // Page changes jump instantly, app-style: a new page opens at its top, Back lands where you were.
-  // Brand changes inside the catalog leave scrolling to CatalogSection.
+  // A brand is its own page too: it opens at the top, and "Все бренды" lands back on the brand
+  // card you came from (homeScroll), not at the start of the site.
+  const homeScroll = useRef<number | null>(null);
   const prevRoute = useRef(route);
   useEffect(() => {
     const prev = prevRoute.current;
     prevRoute.current = route;
     if (prev === route) return;
     if (onFragrancePage) window.scrollTo({ top: 0, behavior: 'instant' });
-    else if (prev.type !== 'fragrance') return;
-    else if (landOnCatalog.current) {
-      landOnCatalog.current = false;
-      document.getElementById('catalog')?.scrollIntoView({ block: 'start', behavior: 'instant' });
-    } else window.scrollTo({ top: savedScroll.current, behavior: 'instant' });
+    else if (prev.type === 'fragrance') {
+      if (landOnCatalog.current) {
+        landOnCatalog.current = false;
+        document.getElementById('catalog')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      } else window.scrollTo({ top: savedScroll.current, behavior: 'instant' });
+    } else if (route.type === 'brand') window.scrollTo({ top: 0, behavior: 'instant' });
+    else if (prev.type === 'brand') {
+      if (homeScroll.current !== null) window.scrollTo({ top: homeScroll.current, behavior: 'instant' });
+      else document.getElementById('catalog')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      homeScroll.current = null;
+    }
   }, [onFragrancePage, route]);
 
   // Tab title follows the route so history and open tabs are tellable apart (fragrance pages set their own).
@@ -72,8 +80,11 @@ export function App() {
     [navigate],
   );
   const selectBrand = useCallback(
-    (brandId: string | null) => navigate(brandId ? { type: 'brand', id: brandId } : { type: 'home' }),
-    [navigate],
+    (brandId: string | null) => {
+      if (brandId && route.type === 'home') homeScroll.current = window.scrollY;
+      navigate(brandId ? { type: 'brand', id: brandId } : { type: 'home' });
+    },
+    [navigate, route.type],
   );
 
   return (
@@ -103,7 +114,8 @@ export function App() {
             </div>
           </div>
         )}
-        <Hero />
+        {/* The big intro belongs to the start page only; a brand page opens straight on its fragrances. */}
+        {route.type !== 'brand' && <Hero />}
         <CatalogSection onOpen={openFragrance} brandId={route.type === 'brand' ? route.id : null} onSelectBrand={selectBrand} />
         <About />
         <Delivery />
