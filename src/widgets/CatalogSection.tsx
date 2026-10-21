@@ -42,7 +42,7 @@ export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
 
       {view === 'brands' && <BrandPreviewGrid onSelect={onSelectBrand} />}
 
-      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onBack={() => onSelectBrand(null)} onOpen={onOpen} />}
+      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onOpen={onOpen} />}
 
       {view === 'list' &&
         (fragrances.length === 0 ? (
@@ -50,7 +50,7 @@ export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
         ) : (
           <ul className="mt-8 rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
             {fragrances.map((f) => (
-              <FragranceRow key={f.id} fragrance={f} showBrand onOpen={onOpen} />
+              <FragranceRow key={f.id} fragrance={f} showBrand={!selectedBrand} onOpen={onOpen} />
             ))}
           </ul>
         ))}

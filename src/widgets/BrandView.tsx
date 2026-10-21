@@ -1,25 +1,13 @@
 import type { Brand, Fragrance } from '@/entities/fragrance';
-import { plural } from '@/shared/lib/format';
 import { FragranceRow } from './FragranceRow';
 
-export function BrandView({ brand, onBack, onOpen }: { brand: Brand; onBack: () => void; onOpen: (f: Fragrance) => void }) {
-  const count = brand.fragrances.length;
+/** A brand's fragrances; the brand name, count and way back live in the toolbar's brand bar. */
+export function BrandView({ brand, onOpen }: { brand: Brand; onOpen: (f: Fragrance) => void }) {
   return (
-    <section className="mt-8">
-      <button type="button" onClick={onBack} className="-my-3 inline-flex min-h-11 items-center gap-2 text-sm text-muted transition-colors hover:text-gold">
-        <span aria-hidden="true">←</span> Все бренды
-      </button>
-      <header className="mt-4 mb-6 flex flex-wrap items-baseline justify-between gap-4">
-        <h2 className="font-display text-4xl text-fg sm:text-5xl">{brand.name}</h2>
-        <span className="text-xs tracking-[0.15em] text-muted uppercase">
-          {count} {plural(count, ['аромат', 'аромата', 'ароматов'])}
-        </span>
-      </header>
-      <ul className="rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
-        {brand.fragrances.map((f) => (
-          <FragranceRow key={f.id} fragrance={f} onOpen={onOpen} />
-        ))}
-      </ul>
-    </section>
+    <ul className="mt-8 rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
+      {brand.fragrances.map((f) => (
+        <FragranceRow key={f.id} fragrance={f} onOpen={onOpen} />
+      ))}
+    </ul>
   );
 }

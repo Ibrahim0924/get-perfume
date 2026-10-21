@@ -17,6 +17,18 @@ interface Props {
 export function CatalogToolbar({ filters, actions, resultCount, isRefined, selectedBrand }: Props) {
   return (
     <div className="-mx-5 border-b border-line/60 bg-bg/90 px-5 py-4 backdrop-blur-md sm:-mx-8 sm:px-8 lg:sticky lg:top-16 lg:z-20">
+      {selectedBrand && (
+        // The brand you are in, as its own bar: always visible, one obvious way back to all brands.
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface py-2.5 pr-2.5 pl-4">
+          <div className="min-w-0">
+            <p className="text-[11px] tracking-[0.18em] text-muted uppercase">Бренд</p>
+            <h2 className="font-display truncate text-2xl leading-tight text-fg sm:text-3xl">{selectedBrand.name}</h2>
+          </div>
+          <Chip className="shrink-0" onClick={() => actions.selectBrand(null)} aria-pressed={undefined}>
+            Все бренды <span aria-hidden="true" className="text-base leading-none">×</span>
+          </Chip>
+        </div>
+      )}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <label className="relative flex-1 lg:max-w-md">
           <span className="sr-only">Поиск по бренду или названию</span>
@@ -58,26 +70,20 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-muted">
-        <p aria-live="polite" className="flex flex-wrap items-center gap-x-2">
+      {/* Sort stays pinned right; only the count/reset side may wrap, so nothing jumps between lines. */}
+      <div className="mt-3 flex items-center justify-between gap-3 text-sm text-muted">
+        <p aria-live="polite" className="flex min-w-0 flex-wrap items-center gap-x-2">
           <span>{resultCount} {plural(resultCount, ['аромат', 'аромата', 'ароматов'])}</span>
-          {selectedBrand && (
-            <button
-              type="button"
-              onClick={() => actions.selectBrand(null)}
-              className="-my-3 inline-flex min-h-11 items-center gap-1 py-3 text-xs font-medium text-gold [&>span:first-child]:rounded-full [&>span:first-child]:bg-gold/15 [&>span:first-child]:px-2.5 [&>span:first-child]:py-0.5 hover:[&>span:first-child]:bg-gold/25"
-              aria-label={`Убрать фильтр по бренду ${selectedBrand.name}`}
-            >
-              <span className="inline-flex max-w-[60vw] items-center gap-1 sm:max-w-xs"><span className="truncate">{selectedBrand.name}</span><span aria-hidden="true">×</span></span>
-            </button>
-          )}
           {isRefined && (
-            <button type="button" onClick={actions.clearRefinements} className="-my-3 inline-flex min-h-11 items-center text-gold underline-offset-4 hover:underline">
-              сбросить
-            </button>
+            <>
+              <span aria-hidden="true">·</span>
+              <button type="button" onClick={actions.clearRefinements} className="-my-3 inline-flex min-h-11 items-center font-semibold text-gold underline-offset-4 hover:underline">
+                сбросить фильтры
+              </button>
+            </>
           )}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <span aria-hidden="true" className="hidden sm:inline">Сортировка</span>
           <SelectMenu
             label="Сортировка"
