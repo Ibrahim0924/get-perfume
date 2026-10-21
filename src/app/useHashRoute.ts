@@ -2,9 +2,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { catalog, fragranceByPath, fragrancePath, isBrandId } from '@/entities/fragrance';
 
 /** `missing` carries a hash that matched nothing, so the UI can say so instead of silently showing the home page. */
-export type Route = { type: 'home'; missing?: string } | { type: 'brand'; id: string } | { type: 'fragrance'; id: string };
+export type Route =
+  | { type: 'home'; missing?: string }
+  | { type: 'brand'; id: string }
+  | { type: 'fragrance'; id: string }
+  | { type: 'selection' };
+
+/** Path of the "Подборка" page (pick fragrances, download their photos). */
+const SELECTION_PATH = 'podborka';
 
 function canonicalHash(route: Route): string {
+  if (route.type === 'selection') return `#/${SELECTION_PATH}`;
   if (route.type === 'brand') return `#/${route.id}`;
   if (route.type === 'fragrance') {
     const path = fragrancePath(route.id);
@@ -30,6 +38,7 @@ function parseHash(hash: string): Route {
 
   const path = decodeURIComponent(h).replace(/\/+$/, '');
   if (SECTION_IDS.has(path)) return { type: 'home' }; // plain in-page anchors like #catalog
+  if (path === SELECTION_PATH) return { type: 'selection' };
   const fragrance = fragranceByPath(path);
   if (fragrance) return { type: 'fragrance', id: fragrance.id };
   if (isBrandId(path)) return { type: 'brand', id: path };

@@ -1,3 +1,4 @@
+import { useSelection } from '@/features/selection';
 import { ThemeToggle } from '@/features/theme';
 import { cn } from '@/shared/lib/cn';
 import { useHideOnScroll } from '@/shared/lib/useHideOnScroll';
@@ -7,9 +8,11 @@ import { Logo } from './Logo';
 interface Props {
   /** Navigate to the start screen, optionally scrolling to a section. */
   onNavigate: (sectionId?: string) => void;
+  onOpenSelection: () => void;
+  selectionOpen: boolean;
 }
 
-export function Header({ onNavigate }: Props) {
+export function Header({ onNavigate, onOpenSelection, selectionOpen }: Props) {
   const go = (sectionId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     onNavigate(sectionId);
@@ -50,6 +53,7 @@ export function Header({ onNavigate }: Props) {
             <a className="transition-colors hover:text-fg" href="#delivery" onClick={go('delivery')}>Доставка</a>
             <a className="transition-colors hover:text-fg" href="#contacts" onClick={go('contacts')}>Контакты</a>
           </nav>
+          <SelectionButton onClick={onOpenSelection} active={selectionOpen} />
           <ThemeToggle />
         </div>
       </Container>
@@ -63,5 +67,34 @@ export function Header({ onNavigate }: Props) {
         <a className="inline-flex min-h-11 shrink-0 items-center px-2" href="#contacts" onClick={go('contacts')}>Контакты</a>
       </nav>
     </header>
+  );
+}
+
+/** Opens "Подборка" (tick fragrances, download their photos); the badge counts what is ticked. */
+function SelectionButton({ onClick, active }: { onClick: () => void; active: boolean }) {
+  const { ids } = useSelection();
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? 'page' : undefined}
+      aria-label={ids.size > 0 ? `Подборка, отмечено ${ids.size}` : 'Подборка'}
+      title="Подборка: отметить ароматы и скачать фото"
+      className={cn(
+        'relative inline-flex h-9 items-center justify-center gap-2 rounded-full border transition-colors max-md:w-9 md:px-3.5',
+        active ? 'border-gold bg-gold/15 text-gold' : 'border-line text-muted hover:border-gold hover:text-gold',
+      )}
+    >
+      <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="4" />
+        <path d="m8.5 12.5 2.5 2.5 4.5-5" />
+      </svg>
+      <span className="text-sm max-md:hidden">Подборка</span>
+      {ids.size > 0 && (
+        <span aria-hidden="true" className="absolute -top-1.5 -right-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-on-accent">
+          {ids.size > 99 ? '99+' : ids.size}
+        </span>
+      )}
+    </button>
   );
 }

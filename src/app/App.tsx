@@ -8,8 +8,9 @@ import { Footer } from '@/widgets/Footer';
 import { FragrancePage } from '@/widgets/FragrancePage';
 import { Header } from '@/widgets/Header';
 import { Hero } from '@/widgets/Hero';
+import { SelectionPage } from '@/widgets/SelectionPage';
 import { BackToTop } from '@/shared/ui/BackToTop';
-import { useHashRoute } from './useHashRoute';
+import { useHashRoute, type Route } from './useHashRoute';
 
 const DEFAULT_TITLE = 'GerParfume — Ароматы по мотивам известных брендов';
 
@@ -22,11 +23,13 @@ export function App() {
     if (route.type === 'home' && route.missing) setMissingLink(route.missing);
   }, [route]);
   const landOnCatalog = useRef(false);
-  const onFragrancePage = route.type === 'fragrance';
-  // The catalogue page under an open fragrance (home or a brand). It stays put while the fragrance is
-  // shown, so Back finds the same brand, the same opened list and the same scroll position.
-  const [catalogRoute, setCatalogRoute] = useState(route);
-  if (!onFragrancePage && route !== catalogRoute) setCatalogRoute(route);
+  // Pages shown over the catalogue: a fragrance, or "Подборка".
+  const overCatalog = route.type === 'fragrance' || route.type === 'selection';
+  // The catalogue page under them (home or a brand). It stays put meanwhile, so Back finds the same
+  // brand, the same opened list and the same scroll position.
+  // Opened straight on a fragrance or "Подборка" (a shared link), the catalogue underneath is the start page.
+  const [catalogRoute, setCatalogRoute] = useState<Route>(overCatalog ? { type: 'home' } : route);
+  if (!overCatalog && route !== catalogRoute) setCatalogRoute(route);
   const catalogBrandId = catalogRoute.type === 'brand' ? catalogRoute.id : null;
 
   // The catalog stays mounted (hidden) behind the fragrance page so filters and
@@ -40,8 +43,8 @@ export function App() {
     const prev = prevRoute.current;
     prevRoute.current = route;
     if (prev === route) return;
-    if (onFragrancePage) window.scrollTo({ top: 0, behavior: 'instant' });
-    else if (prev.type === 'fragrance') {
+    if (overCatalog) window.scrollTo({ top: 0, behavior: 'instant' });
+    else if (prev.type === 'fragrance' || prev.type === 'selection') {
       if (landOnCatalog.current) {
         landOnCatalog.current = false;
         document.getElementById('catalog')?.scrollIntoView({ block: 'start', behavior: 'instant' });
@@ -52,22 +55,28 @@ export function App() {
       else document.getElementById('catalog')?.scrollIntoView({ block: 'start', behavior: 'instant' });
       homeScroll.current = null;
     }
-  }, [onFragrancePage, route]);
+  }, [overCatalog, route]);
 
   // Tab title follows the route so history and open tabs are tellable apart (fragrance pages set their own).
   useEffect(() => {
     if (route.type === 'fragrance') return;
     const brand = route.type === 'brand' ? catalog.brands.find((b) => b.id === route.id) : null;
-    document.title = brand ? `${brand.name} — ароматы по мотивам · GerParfume` : DEFAULT_TITLE;
+    document.title = route.type === 'selection' ? 'Подборка · GerParfume' : brand ? `${brand.name} — ароматы по мотивам · GerParfume` : DEFAULT_TITLE;
   }, [route]);
 
   const openFragrance = useCallback(
     (f: Fragrance) => {
-      if (!onFragrancePage) savedScroll.current = window.scrollY;
+      if (!overCatalog) savedScroll.current = window.scrollY;
       navigate({ type: 'fragrance', id: f.id });
     },
-    [navigate, onFragrancePage],
+    [navigate, overCatalog],
   );
+  const openSelection = useCallback(() => {
+    if (!overCatalog) savedScroll.current = window.scrollY;
+    navigate({ type: 'selection' });
+  }, [navigate, overCatalog]);
+  // Back from "Подборка" to the catalogue page it was opened from.
+  const closeSelection = useCallback(() => navigate(catalogRoute), [navigate, catalogRoute]);
   // "← Каталог" from a fragrance opened by direct link has no saved position: land on the catalog, not the hero.
   const goHome = useCallback(() => {
     landOnCatalog.current = savedScroll.current === 0;
@@ -94,13 +103,18 @@ export function App() {
 
   return (
     <>
-      <Header onNavigate={goSection} />
-      {onFragrancePage && (
+      <Header onNavigate={goSection} onOpenSelection={openSelection} selectionOpen={route.type === 'selection'} />
+      {route.type === 'fragrance' && (
         <main>
           <FragrancePage id={route.id} onBack={goHome} onOpen={openFragrance} />
         </main>
       )}
-      <main hidden={onFragrancePage}>
+      {route.type === 'selection' && (
+        <main>
+          <SelectionPage onBack={closeSelection} />
+        </main>
+      )}
+      <main hidden={overCatalog}>
         {missingLink && (
           <div role="status" className="border-b border-line/60 bg-surface">
             <div className="mx-auto flex max-w-6xl items-start gap-3 px-5 py-3 text-sm sm:px-8">
@@ -127,7 +141,8 @@ export function App() {
         <Contacts />
       </main>
       <Footer onNavigate={goSection} />
-      <BackToTop />
+      {/* "Подборка" has its own bottom bar in that corner. */}
+      {route.type !== 'selection' && <BackToTop />}
     </>
   );
 }
