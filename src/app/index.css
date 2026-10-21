@@ -74,7 +74,12 @@
 .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 280ms; animation-timing-function: ease; }
 
-/* Dropdown menus (SelectMenu): short pop from the button's corner. */
+/* Dropdown menus (SelectMenu): short pop from the button's corner, a quicker fade back on close,
+   and the button's new value sliding in. */
 @keyframes menu-pop { from { opacity: 0; transform: translateY(-4px) scale(0.97); } }
-.menu-pop { animation: menu-pop 140ms ease-out; }
-@media (prefers-reduced-motion: reduce) { .menu-pop { animation: none; } }
+@keyframes menu-out { to { opacity: 0; transform: translateY(-4px) scale(0.97); } }
+@keyframes label-swap { from { opacity: 0; transform: translateY(35%); } }
+.menu-pop { animation: menu-pop 160ms ease-out; }
+.menu-pop.menu-out { animation: menu-out 120ms ease-in forwards; }
+.label-swap { animation: label-swap 200ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .menu-pop, .menu-pop.menu-out, .label-swap { animation: none; } }

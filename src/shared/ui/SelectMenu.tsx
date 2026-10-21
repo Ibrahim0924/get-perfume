@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import { cn } from '@/shared/lib/cn';
+
+/** Minimum gap between the menu and any screen edge. */
+const EDGE = 8;
+const GAP = 8;
 
 interface Option<T extends string> {
   value: T;
@@ -19,7 +23,12 @@ interface Props<T extends string> {
 /** Site-styled replacement for a native <select>: same look on every OS, listbox semantics, full keyboard support. */
 export function SelectMenu<T extends string>({ value, options, onChange, label, icon, className }: Props<T>) {
   const [open, setOpen] = useState(false);
+  // Stays true while the closing animation plays, so the menu fades out instead of vanishing.
+  const [mounted, setMounted] = useState(false);
+  // The label only animates after a pick, not on first render.
+  const [picked, setPicked] = useState(false);
   const [active, setActive] = useState(0);
+  const [place, setPlace] = useState<CSSProperties>({});
   const [upward, setUpward] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -29,23 +38,40 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
 
   const close = useCallback((focusButton = true) => {
     setOpen(false);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setMounted(false);
     if (focusButton) buttonRef.current?.focus();
   }, []);
 
   const openList = (index = selectedIndex) => {
-    // Open upwards when the button sits near the bottom of the screen and there is more room above.
-    const rect = buttonRef.current?.getBoundingClientRect();
-    const needed = options.length * 44 + 32;
-    setUpward(!!rect && window.innerHeight - rect.bottom < needed && rect.top > window.innerHeight - rect.bottom);
     setActive(index);
     setOpen(true);
+    setMounted(true);
   };
 
   const choose = (index: number) => {
     const option = options[index];
-    if (option && option.value !== value) onChange(option.value);
+    if (option && option.value !== value) {
+      setPicked(true);
+      onChange(option.value);
+    }
     close();
   };
+
+  // Keep the open menu fully on screen: right-aligned to the button when it fits, otherwise shifted
+  // in from whichever side it would cross; opens towards the larger free space, scrolls if even that is short.
+  useLayoutEffect(() => {
+    if (!open || !listRef.current || !rootRef.current) return;
+    const anchor = rootRef.current.getBoundingClientRect();
+    const width = listRef.current.offsetWidth;
+    const below = window.innerHeight - anchor.bottom - GAP - EDGE;
+    const above = anchor.top - GAP - EDGE;
+    const goUp = listRef.current.scrollHeight > below && above > below;
+    const alignRight = anchor.right - width;
+    const preferredLeft = alignRight >= EDGE ? alignRight : anchor.left; // near the left edge: align to the button's left
+    const left = Math.min(Math.max(preferredLeft, EDGE), window.innerWidth - EDGE - width);
+    setUpward(goUp);
+    setPlace({ left: left - anchor.left, right: 'auto', maxHeight: Math.max(goUp ? above : below, 120) });
+  }, [open]);
 
   // Focus the list on open; close on a tap/click anywhere else.
   useEffect(() => {
@@ -101,7 +127,14 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
         )}
       >
         {icon && <span aria-hidden="true" className="text-muted">{icon}</span>}
-        <span>{options[selectedIndex]?.label}</span>
+        {/* Every label sits in the same grid cell, so the button is always as wide as the longest one
+            and does not jump (or rewrap the row) when the choice changes. */}
+        <span className="grid text-left">
+          {options.map((o) => (
+            <span key={o.value} aria-hidden="true" className="invisible col-start-1 row-start-1">{o.label}</span>
+          ))}
+          <span key={value} className={cn('col-start-1 row-start-1', picked && 'label-swap')}>{options[selectedIndex]?.label}</span>
+        </span>
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -116,7 +149,7 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
         </svg>
       </button>
 
-      {open && (
+      {mounted && (
         <ul
           ref={listRef}
           id={`${id}-list`}
@@ -125,9 +158,12 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
           aria-label={label}
           aria-activedescendant={`${id}-opt-${active}`}
           onKeyDown={onListKey}
+          onAnimationEnd={() => { if (!open) setMounted(false); }}
+          style={place}
           className={cn(
-            'menu-pop absolute right-0 z-40 min-w-56 overflow-hidden rounded-2xl border border-line bg-surface p-1.5 shadow-[0_18px_40px_-16px_rgba(0,0,0,.45)] outline-none',
+            'menu-pop absolute right-0 z-40 max-w-[calc(100vw-1rem)] min-w-56 overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface p-1.5 shadow-[0_18px_40px_-16px_rgba(0,0,0,.45)] outline-none',
             upward ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right',
+            !open && 'menu-out pointer-events-none',
           )}
         >
           {options.map((o, i) => {
