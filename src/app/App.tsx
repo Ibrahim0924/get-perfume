@@ -26,12 +26,19 @@ export function App() {
 
   // The catalog stays mounted (hidden) behind the fragrance page so filters and
   // scroll position survive navigation; scroll is saved/restored manually.
+  // Page changes jump instantly, app-style: a new page opens at its top, Back lands where you were.
+  // Brand changes inside the catalog leave scrolling to CatalogSection.
+  const prevRoute = useRef(route);
   useEffect(() => {
-    if (onFragrancePage) window.scrollTo(0, 0);
+    const prev = prevRoute.current;
+    prevRoute.current = route;
+    if (prev === route) return;
+    if (onFragrancePage) window.scrollTo({ top: 0, behavior: 'instant' });
+    else if (prev.type !== 'fragrance') return;
     else if (landOnCatalog.current) {
       landOnCatalog.current = false;
-      document.getElementById('catalog')?.scrollIntoView({ block: 'start' });
-    } else window.scrollTo(0, savedScroll.current);
+      document.getElementById('catalog')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    } else window.scrollTo({ top: savedScroll.current, behavior: 'instant' });
   }, [onFragrancePage, route]);
 
   // Tab title follows the route so history and open tabs are tellable apart (fragrance pages set their own).

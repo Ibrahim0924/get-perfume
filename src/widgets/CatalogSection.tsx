@@ -21,7 +21,10 @@ export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
   useEffect(() => {
     if (filters.brandId !== brandId) {
       actions.selectBrand(brandId);
-      if (brandId) document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // The list is swapped for the brand view (or back): show it from its top straight away,
+      // without a visible scroll. Leaving a brand only moves up if the catalog top is off-screen.
+      const catalogEl = document.getElementById('catalog');
+      if (catalogEl && (brandId || catalogEl.getBoundingClientRect().top < 0)) catalogEl.scrollIntoView({ behavior: 'instant', block: 'start' });
     }
   }, [brandId, filters.brandId, actions]);
 

@@ -54,7 +54,15 @@ export function useHashRoute() {
   }, [route]);
 
   const navigate = useCallback((to: Route) => {
-    window.location.hash = canonicalHash(to);
+    const hash = canonicalHash(to);
+    if (hash) {
+      window.location.hash = hash;
+      return;
+    }
+    // An empty hash would make the browser jump to the top of the page; scrolling is ours to decide.
+    if (!window.location.hash) return;
+    history.pushState(null, '', window.location.pathname + window.location.search);
+    setRoute(parseHash(''));
   }, []);
 
   return { route, navigate };

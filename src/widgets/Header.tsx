@@ -1,4 +1,6 @@
 import { ThemeToggle } from '@/features/theme';
+import { cn } from '@/shared/lib/cn';
+import { useHideOnScroll } from '@/shared/lib/useHideOnScroll';
 import { Container } from '@/shared/ui/Container';
 import { Logo } from './Logo';
 
@@ -12,8 +14,15 @@ export function Header({ onNavigate }: Props) {
     e.preventDefault();
     onNavigate(sectionId);
   };
+  // On phones the header slides away while scrolling down and comes back on any scroll up.
+  const hidden = useHideOnScroll();
   return (
-    <header className="sticky top-0 z-30 border-b border-line/60 bg-bg/85 backdrop-blur-md">
+    <header
+      className={cn(
+        'sticky top-0 z-30 border-b border-line/60 bg-bg/85 backdrop-blur-md transition-transform duration-300 ease-out focus-within:translate-y-0',
+        hidden && '-translate-y-full',
+      )}
+    >
       {/* Skip link for keyboard users: visible only when focused. */}
       <a
         href="#catalog"

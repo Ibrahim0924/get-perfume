@@ -13,7 +13,8 @@ const DISCLAIMER = 'Все ароматы созданы по мотивам и�
 export function Footer({ onNavigate }: { onNavigate: (sectionId?: string) => void }) {
   return (
     <footer className="border-t border-line/60">
-      <Container className="py-12">
+      {/* Extra bottom room on phones so the floating "Наверх" button never covers the last line. */}
+      <Container className="pt-12 pb-28 sm:pb-12">
         <div className="grid gap-8 sm:grid-cols-[1.2fr_1fr_1fr]">
           <div>
             <span className="font-display text-2xl">Ger<span className="text-gold">Parfume</span></span>

@@ -21,8 +21,9 @@ export function BackToTop() {
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       className={cn(
-        'fixed right-4 bottom-4 z-30 flex size-11 items-center justify-center rounded-full border border-line/80 bg-surface/90 text-muted shadow-[0_8px_24px_-12px_rgba(0,0,0,.45)] backdrop-blur transition-all duration-300 hover:border-gold hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
-        '[right:max(1rem,env(safe-area-inset-right))] [bottom:max(1rem,env(safe-area-inset-bottom))]',
+        'fixed z-30 flex size-11 items-center justify-center rounded-full border border-line/80 bg-surface/90 text-muted shadow-[0_8px_24px_-12px_rgba(0,0,0,.45)] backdrop-blur transition-all duration-300 hover:border-gold hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
+        // Clear of the screen edge and the phone's gesture bar.
+        '[right:calc(1.5rem+env(safe-area-inset-right))] [bottom:calc(2rem+env(safe-area-inset-bottom))]',
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
       )}
     >
