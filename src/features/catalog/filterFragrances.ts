@@ -1,5 +1,6 @@
 import type { Brand, Fragrance } from '@/entities/fragrance';
 import type { CatalogFilters, SortMode } from './model';
+import { buildIndex, queryTerms, searchScore, type SearchIndex } from './search';
 
 const collator = new Intl.Collator(['ru', 'en'], { sensitivity: 'base', numeric: true });
 
@@ -10,26 +11,29 @@ const COMPARATORS: Record<SortMode, (a: Fragrance, b: Fragrance) => number> = {
   'price-desc': (a, b) => b.pricePerMl - a.pricePerMl || collator.compare(a.name, b.name),
 };
 
-function normalizeQuery(q: string): string[] {
-  return q.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/\s+/).filter(Boolean);
-}
-
-function matchesQuery(f: Fragrance, terms: string[]): boolean {
-  if (terms.length === 0) return true;
-  const haystack = `${f.brand} ${f.name}`.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  return terms.every((t) => haystack.includes(t));
+// Built once per fragrance; the catalogue is static.
+const indexCache = new WeakMap<Fragrance, SearchIndex>();
+function indexOf(f: Fragrance): SearchIndex {
+  let idx = indexCache.get(f);
+  if (!idx) indexCache.set(f, (idx = buildIndex(`${f.brand} ${f.name}`)));
+  return idx;
 }
 
 export function filterFragrances(items: readonly Fragrance[], filters: CatalogFilters): Fragrance[] {
-  const terms = normalizeQuery(filters.query);
-  const result = items.filter(
-    (f) =>
-      (filters.brandId === null || f.brandId === filters.brandId) &&
-      (filters.genders.size === 0 || filters.genders.has(f.gender)) &&
-      (filters.prices.size === 0 || filters.prices.has(f.pricePerMl)) &&
-      matchesQuery(f, terms),
-  );
-  return filters.sort === 'brand' ? result : result.sort(COMPARATORS[filters.sort]);
+  const terms = queryTerms(filters.query);
+  const scores = new Map<Fragrance, number>();
+  const result = items.filter((f) => {
+    if (filters.brandId !== null && f.brandId !== filters.brandId) return false;
+    if (filters.genders.size > 0 && !filters.genders.has(f.gender)) return false;
+    if (filters.prices.size > 0 && !filters.prices.has(f.pricePerMl)) return false;
+    if (terms.length === 0) return true;
+    const score = searchScore(terms, indexOf(f));
+    scores.set(f, score);
+    return score > 0;
+  });
+  if (filters.sort !== 'brand') return result.sort(COMPARATORS[filters.sort]);
+  // Default order while searching: closest matches first (exact before sound-alike before typo).
+  return terms.length > 0 ? result.sort((a, b) => scores.get(b)! - scores.get(a)!) : result;
 }
 
 /** Regroups a flat (already filtered) list back into brand sections, preserving brand order. */
