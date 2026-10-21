@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
-import type { Fragrance } from '@/entities/fragrance';
+import { useMemo, useRef, useState } from 'react';
+import { catalog, type Fragrance } from '@/entities/fragrance';
 import { useCatalogFilters } from '@/features/catalog';
 import { Container } from '@/shared/ui/Container';
-import { BRANDS_PAGE, BrandPreviewGrid } from './BrandPreviewGrid';
-import { BrandView } from './BrandView';
+import { firstStep, ShowMore } from '@/shared/ui/ShowMore';
+import { BrandPreviewGrid } from './BrandPreviewGrid';
+import { BrandView, FRAGRANCE_NOUN } from './BrandView';
 import { CatalogToolbar } from './CatalogToolbar';
 import { FragranceRow } from './FragranceRow';
 
@@ -17,7 +18,19 @@ interface Props {
 export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
   const { filters, fragrances, selectedBrand, view, isRefined, actions } = useCatalogFilters(brandId);
   // Lives here, not in the grid, so coming back from a brand finds the list as far open as you left it.
-  const [brandsShown, setBrandsShown] = useState(BRANDS_PAGE);
+  const [brandsShown, setBrandsShown] = useState(() => firstStep(catalog.brands.length));
+
+  // Fragrance lists (a brand, or search/filter results) open a step at a time and start over whenever
+  // the list itself changes — another brand or other filters — but survive a visit to a fragrance.
+  const listTotal = view === 'brand' ? (selectedBrand?.fragrances.length ?? 0) : fragrances.length;
+  const listSource = view === 'brand' ? selectedBrand : fragrances;
+  const [listShown, setListShown] = useState(() => firstStep(listTotal));
+  const [shownFor, setShownFor] = useState(listSource);
+  if (shownFor !== listSource) {
+    setShownFor(listSource);
+    setListShown(firstStep(listTotal));
+  }
+  const listRef = useRef<HTMLUListElement>(null);
 
   const routedActions = useMemo(() => ({ ...actions, selectBrand: onSelectBrand }), [actions, onSelectBrand]);
 
@@ -31,19 +44,24 @@ export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
         selectedBrand={selectedBrand}
       />
 
-      {view === 'brands' && <BrandPreviewGrid onSelect={onSelectBrand} shown={brandsShown} onShowMore={setBrandsShown} />}
+      {view === 'brands' && <BrandPreviewGrid onSelect={onSelectBrand} shown={brandsShown} onShownChange={setBrandsShown} />}
 
-      {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onOpen={onOpen} />}
+      {view === 'brand' && selectedBrand && (
+        <BrandView brand={selectedBrand} onOpen={onOpen} shown={listShown} onShownChange={setListShown} />
+      )}
 
       {view === 'list' &&
         (fragrances.length === 0 ? (
           <EmptyState brandName={selectedBrand?.name ?? null} onReset={actions.clearRefinements} onClearRefinements={actions.clearRefinements} onAllBrands={() => onSelectBrand(null)} />
         ) : (
-          <ul className="mt-8 rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
-            {fragrances.map((f) => (
-              <FragranceRow key={f.id} fragrance={f} showBrand={!selectedBrand} onOpen={onOpen} />
-            ))}
-          </ul>
+          <>
+            <ul ref={listRef} className="mt-8 rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
+              {fragrances.slice(0, listShown).map((f) => (
+                <FragranceRow key={f.id} fragrance={f} showBrand={!selectedBrand} onOpen={onOpen} />
+              ))}
+            </ul>
+            <ShowMore shown={listShown} total={fragrances.length} noun={FRAGRANCE_NOUN} onChange={setListShown} listRef={listRef} />
+          </>
         ))}
     </Container>
   );

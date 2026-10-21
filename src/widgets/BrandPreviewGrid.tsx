@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { catalog, GENDERS, getDetails, localPhoto, type Brand, type Gender } from '@/entities/fragrance';
 import { cn } from '@/shared/lib/cn';
 import { plural } from '@/shared/lib/format';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
+import { ShowMore } from '@/shared/ui/ShowMore';
 
 const GENDER_TAG: Record<Gender, { label: string; tone: string }> = {
   female: { label: 'женские', tone: 'bg-rose/15 text-rose' },
@@ -10,67 +11,26 @@ const GENDER_TAG: Record<Gender, { label: string; tone: string }> = {
   unisex: { label: 'унисекс', tone: 'bg-gold/15 text-gold' },
 };
 
-/** Brands revealed per step; 12 fills whole rows in the 1-, 2- and 3-column grids. */
-export const BRANDS_PAGE = 12;
-
 interface GridProps {
   onSelect: (brandId: string) => void;
   /** How many brands are revealed. Owned by the parent so it survives a visit to a brand page. */
   shown: number;
-  onShowMore: (count: number) => void;
+  onShownChange: (count: number) => void;
 }
 
 /** Brand cards with up to three bottle photos, revealed in steps so phones are not handed 100+ cards at once. */
-export function BrandPreviewGrid({ onSelect, shown, onShowMore }: GridProps) {
-  const total = catalog.brands.length;
-  const visible = catalog.brands.slice(0, shown);
+export function BrandPreviewGrid({ onSelect, shown, onShownChange }: GridProps) {
   const listRef = useRef<HTMLUListElement>(null);
-  const firstNew = useRef<number | null>(null);
-
-  // Keyboard and screen-reader users continue from the first newly revealed card.
-  useEffect(() => {
-    if (firstNew.current === null) return;
-    listRef.current?.querySelectorAll<HTMLButtonElement>('li > button')[firstNew.current]?.focus({ preventScroll: true });
-    firstNew.current = null;
-  }, [shown]);
-
-  const reveal = (count: number) => {
-    firstNew.current = shown;
-    onShowMore(count);
-  };
-
   return (
     <>
       <ul ref={listRef} className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visible.map((b) => (
+        {catalog.brands.slice(0, shown).map((b) => (
           <li key={b.id}>
             <BrandPreviewCard brand={b} onSelect={onSelect} />
           </li>
         ))}
       </ul>
-      {shown < total && (
-        <div className="mt-8 flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-muted">
-            Показано {shown} из {total} {plural(total, ['бренда', 'брендов', 'брендов'])}
-          </p>
-          <div className="flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row sm:gap-3">
-            <button
-              type="button"
-              onClick={() => reveal(Math.min(total, shown + BRANDS_PAGE))}
-              className="h-12 w-full rounded-full border border-gold bg-gold/10 px-8 text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-on-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:w-auto"
-            >
-              Показать ещё {Math.min(BRANDS_PAGE, total - shown)}
-            </button>
-            <button
-              type="button"
-              onClick={() => reveal(total)}
-              className="-my-1 inline-flex min-h-11 items-center px-4 text-sm font-medium text-muted underline-offset-4 transition-colors hover:text-fg hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-            >
-              Показать все
-            </button>
-          </div>
-        </div>
-      )}
+      <ShowMore shown={shown} total={catalog.brands.length} noun={['бренда', 'брендов', 'брендов']} onChange={onShownChange} listRef={listRef} />
     </>
   );
 }
