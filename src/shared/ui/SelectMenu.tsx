@@ -19,11 +19,13 @@ interface Props<T extends string> {
   /** Accessible name of the control (the visible button shows only the current value). */
   label: string;
   icon?: ReactNode;
+  /** Gold dot on the phone (icon-only) button, e.g. when a non-default option is chosen. */
+  marked?: boolean;
   className?: string;
 }
 
 /** Site-styled replacement for a native <select>: same look on every OS, listbox semantics, full keyboard support. */
-export function SelectMenu<T extends string>({ value, options, onChange, label, icon, className }: Props<T>) {
+export function SelectMenu<T extends string>({ value, options, onChange, label, icon, marked = false, className }: Props<T>) {
   const [open, setOpen] = useState(false);
   // Stays true while the closing animation plays, so the menu fades out instead of vanishing.
   const [mounted, setMounted] = useState(false);
@@ -123,16 +125,17 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
         onClick={() => (open ? close() : openList())}
         onKeyDown={onButtonKey}
         className={cn(
-          'inline-flex h-9 items-center gap-2 rounded-full border bg-surface pr-3 pl-4 text-sm text-fg transition-colors',
+          // Phones: a round icon button beside the search field; wider screens also show the current value.
+          'relative inline-flex h-11 items-center gap-2 rounded-full border bg-surface pr-3 pl-4 text-sm text-fg transition-colors max-sm:w-11 max-sm:justify-center max-sm:p-0',
           'hover:border-gold/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
           open ? 'border-gold' : 'border-line',
         )}
       >
-        {/* The icon gives way on the narrowest phones so the row never overflows. */}
-        {icon && <span aria-hidden="true" className="text-muted max-[359px]:hidden">{icon}</span>}
+        {icon && <span aria-hidden="true" className="text-muted max-sm:text-fg">{icon}</span>}
+        {marked && <span aria-hidden="true" className="absolute top-2 right-2 size-2 rounded-full bg-gold ring-2 ring-surface sm:hidden" />}
         {/* Every label sits in the same grid cell, so the button is always as wide as the longest one
             and does not jump (or rewrap the row) when the choice changes. */}
-        <span className="grid text-left">
+        <span className="grid text-left max-sm:hidden">
           {options.map((o) => (
             <span key={o.value} aria-hidden="true" className="invisible col-start-1 row-start-1">{o.short ?? o.label}</span>
           ))}
@@ -141,7 +144,7 @@ export function SelectMenu<T extends string>({ value, options, onChange, label, 
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
-          className={cn('size-4 text-muted transition-transform duration-200', open && 'rotate-180')}
+          className={cn('size-4 text-muted transition-transform duration-200 max-sm:hidden', open && 'rotate-180')}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"

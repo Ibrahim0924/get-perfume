@@ -35,26 +35,39 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
         </div>
       )}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <label className="relative flex-1 lg:max-w-md">
-          <span className="sr-only">Поиск по бренду или названию</span>
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted" />
-          <input
-            type="search"
-            value={filters.query}
-            onChange={(e) => actions.setQuery(e.target.value)}
-            placeholder="Поиск: Sauvage, Kilian, Molecule…"
-            // Brand names are not dictionary words: keep phone keyboards from "correcting" them; Enter hides the keyboard.
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-            autoComplete="off"
-            enterKeyHint="search"
-            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-            className="h-11 w-full rounded-full border border-line bg-surface pr-4 pl-11 text-sm text-fg placeholder:text-muted/70 focus:border-gold focus:ring-3 focus:ring-gold/30 focus:outline-none"
+        {/* Sort sits right beside the search: both are "how to look through the list". */}
+        <div className="flex flex-1 items-center gap-2 lg:max-w-md">
+          <label className="relative min-w-0 flex-1">
+            <span className="sr-only">Поиск по бренду или названию</span>
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted" />
+            <input
+              type="search"
+              value={filters.query}
+              onChange={(e) => actions.setQuery(e.target.value)}
+              placeholder="Поиск: Sauvage, Kilian…"
+              // Brand names are not dictionary words: keep phone keyboards from "correcting" them; Enter hides the keyboard.
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="off"
+              enterKeyHint="search"
+              onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+              className="h-11 w-full rounded-full border border-line bg-surface pr-4 pl-11 text-sm text-fg placeholder:text-muted/70 focus:border-gold focus:ring-3 focus:ring-gold/30 focus:outline-none"
+            />
+          </label>
+          <SelectMenu
+            className="shrink-0"
+            label="Сортировка"
+            value={filters.sort}
+            options={SORT_OPTIONS}
+            onChange={actions.setSort}
+            icon={<SortIcon className="size-4" />}
+            marked={filters.sort !== SORT_MODES[0]}
           />
-        </label>
+        </div>
 
-        <div className="-mx-5 flex items-center gap-2 overflow-x-auto px-5 pr-12 pb-1 [mask-image:linear-gradient(to_right,black_calc(100%-3rem),transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none] lg:flex-wrap [&::-webkit-scrollbar]:hidden">
+        {/* Scrolls sideways, which clips anything outside it: py/-my gives the active ring and focus outline room. */}
+        <div className="-mx-5 -my-1.5 flex items-center gap-2 overflow-x-auto px-5 py-1.5 pr-12 [mask-image:linear-gradient(to_right,black_calc(100%-3rem),transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none] lg:flex-wrap [&::-webkit-scrollbar]:hidden">
           <fieldset className="contents">
             <legend className="sr-only">Пол</legend>
             {GENDERS.map((g) => (
@@ -75,35 +88,22 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
         </div>
       </div>
 
-      {/* Sort stays pinned right. With filters on, phones get a deliberate second line: the count above,
-          the reset pill on the sort's line; wider screens keep everything on one line. */}
-      <div className="mt-3 flex items-end justify-between gap-3 text-sm text-muted sm:items-center">
-        <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <p aria-live="polite">{resultCount} {plural(resultCount, ['аромат', 'аромата', 'ароматов'])}</p>
-          {isRefined && (
-            <button
-              type="button"
-              onClick={actions.clearRefinements}
-              aria-label="Сбросить фильтры"
-              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full whitespace-nowrap border border-gold/60 bg-gold/10 pr-4 pl-3 text-sm font-semibold text-gold transition-colors hover:bg-gold/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-            >
-              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                <path d="M6 6l12 12M18 6 6 18" />
-              </svg>
-              Сбросить
-            </button>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <span aria-hidden="true" className="hidden sm:inline">Сортировка</span>
-          <SelectMenu
-            label="Сортировка"
-            value={filters.sort}
-            options={SORT_OPTIONS}
-            onChange={actions.setSort}
-            icon={<SortIcon className="size-4" />}
-          />
-        </div>
+      {/* One quiet line: how many, and a way back to everything when filters are on. */}
+      <div className="mt-3 flex min-h-9 items-center justify-between gap-3 text-sm text-muted">
+        <p aria-live="polite">{resultCount} {plural(resultCount, ['аромат', 'аромата', 'ароматов'])}</p>
+        {isRefined && (
+          <button
+            type="button"
+            onClick={actions.clearRefinements}
+            aria-label="Сбросить фильтры"
+            className="-my-1 inline-flex min-h-11 shrink-0 items-center gap-1.5 font-semibold whitespace-nowrap text-gold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+          >
+            Сбросить
+            <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   );
