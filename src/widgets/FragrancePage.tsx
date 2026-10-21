@@ -88,12 +88,6 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="font-display text-3xl text-gold">{formatPrice(fragrance.pricePerMl)}<span className="ml-1 text-sm text-muted">/ мл</span></span>
             <span className={cn('rounded-full px-3 py-1 text-xs font-semibold', GENDER_TONE[fragrance.gender])}>{GENDER_LABEL[fragrance.gender]}</span>
-            {/* Quick order next to the price, so the CTA is on the first screen; the detailed block below stays. */}
-            <WhatsAppButton
-              className="h-11 basis-full justify-center sm:ml-auto sm:basis-auto"
-              label="Заказать в WhatsApp"
-              text={`Здравствуйте! Хочу заказать аромат ${fragranceTitle(fragrance)} (${fragrance.pricePerMl} ₽/мл).`}
-            />
           </div>
 
           {d ? (
