@@ -1,13 +1,24 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/shared/lib/cn';
 
-/** Floating "to top" button; appears once the page is scrolled past ~1.5 screens. */
+const MIN_DELTA = 6;
+
+/**
+ * Floating "to top" button. Shows up only while the visitor scrolls back up (past ~1.5 screens),
+ * which is when they want it, and slides away again as soon as they scroll down.
+ */
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const update = () => setVisible(window.scrollY > window.innerHeight * 1.5);
-    update();
+    let last = window.scrollY;
+    const update = () => {
+      const y = window.scrollY;
+      const delta = y - last;
+      if (Math.abs(delta) < MIN_DELTA) return;
+      last = y;
+      setVisible(delta < 0 && y > window.innerHeight * 1.5);
+    };
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
