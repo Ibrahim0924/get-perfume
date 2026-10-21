@@ -73,3 +73,8 @@
 /* Theme swap: everything changes in one frame (see applyTheme), then the whole page cross-fades. */
 .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 280ms; animation-timing-function: ease; }
+
+/* Dropdown menus (SelectMenu): short pop from the button's corner. */
+@keyframes menu-pop { from { opacity: 0; transform: translateY(-4px) scale(0.97); } }
+.menu-pop { animation: menu-pop 140ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .menu-pop { animation: none; } }

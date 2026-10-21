@@ -1,7 +1,10 @@
 import { catalog, GENDER_LABEL, GENDERS, type Brand } from '@/entities/fragrance';
-import { SORT_LABEL, SORT_MODES, type CatalogActions, type CatalogFilters, type SortMode } from '@/features/catalog';
+import { SORT_LABEL, SORT_MODES, type CatalogActions, type CatalogFilters } from '@/features/catalog';
 import { plural } from '@/shared/lib/format';
 import { Chip } from '@/shared/ui/Chip';
+import { SelectMenu } from '@/shared/ui/SelectMenu';
+
+const SORT_OPTIONS = SORT_MODES.map((m) => ({ value: m, label: SORT_LABEL[m] }));
 
 interface Props {
   filters: CatalogFilters;
@@ -74,20 +77,26 @@ export function CatalogToolbar({ filters, actions, resultCount, isRefined, selec
             </button>
           )}
         </p>
-        <label className="flex items-center gap-2">
-          <span className="hidden sm:inline">Сортировка</span>
-          <select
+        <div className="flex items-center gap-2">
+          <span aria-hidden="true" className="hidden sm:inline">Сортировка</span>
+          <SelectMenu
+            label="Сортировка"
             value={filters.sort}
-            onChange={(e) => actions.setSort(e.target.value as SortMode)}
-            className="h-9 rounded-full border border-line bg-surface px-3 text-sm text-fg focus:border-gold focus:ring-3 focus:ring-gold/30 focus:outline-none"
-          >
-            {SORT_MODES.map((m) => (
-              <option key={m} value={m}>{SORT_LABEL[m]}</option>
-            ))}
-          </select>
-        </label>
+            options={SORT_OPTIONS}
+            onChange={actions.setSort}
+            icon={<SortIcon className="size-4" />}
+          />
+        </div>
       </div>
     </div>
+  );
+}
+
+function SortIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <path d="M4 7h16M7 12h10M10 17h4" />
+    </svg>
   );
 }
 
