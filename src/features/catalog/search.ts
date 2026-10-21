@@ -3,7 +3,7 @@
  * (as typed, with the keyboard layout switched, or transliterated) is found in the brand/name:
  *   3 — plain substring ("sauv" → Sauvage, "бриз" → Каспийский бриз)
  *   ~2 — same sound: Cyrillic and Latin reduced to a consonant skeleton ("сава", "соваж" → Sauvage)
- *   1 — a typo away (one or two letters, by length: "sauvge", "kilain")
+ *   1 — a typo away, for words of 5+ letters (one or two letters by length: "sauvge", "kilain")
  * Every term has to match; the fragrance scores its weakest term so exact hits rank first.
  */
 
@@ -124,7 +124,7 @@ function termScore(term: string, idx: SearchIndex, multiWord: boolean): number {
       best = Math.max(best, 2 - editDistance(v, word.slice(0, v.length)) / 100);
     });
   }
-  if (best > 0 || term.length < 4) return best;
+  if (best > 0 || term.length < 5) return best;
 
   const allowed = term.length >= 7 ? 2 : 1;
   for (const v of sound) {
