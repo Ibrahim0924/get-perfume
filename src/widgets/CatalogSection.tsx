@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Fragrance } from '@/entities/fragrance';
 import { useCatalogFilters } from '@/features/catalog';
 import { Container } from '@/shared/ui/Container';
-import { BrandPreviewGrid } from './BrandPreviewGrid';
+import { BRANDS_PAGE, BrandPreviewGrid } from './BrandPreviewGrid';
 import { BrandView } from './BrandView';
 import { CatalogToolbar } from './CatalogToolbar';
 import { FragranceRow } from './FragranceRow';
@@ -15,12 +15,9 @@ interface Props {
 }
 
 export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
-  const { filters, fragrances, selectedBrand, view, isRefined, actions } = useCatalogFilters();
-
-  // Mirror the route into filter state (single source of truth is the hash). Scrolling is App's job.
-  useEffect(() => {
-    if (filters.brandId !== brandId) actions.selectBrand(brandId);
-  }, [brandId, filters.brandId, actions]);
+  const { filters, fragrances, selectedBrand, view, isRefined, actions } = useCatalogFilters(brandId);
+  // Lives here, not in the grid, so coming back from a brand finds the list as far open as you left it.
+  const [brandsShown, setBrandsShown] = useState(BRANDS_PAGE);
 
   const routedActions = useMemo(() => ({ ...actions, selectBrand: onSelectBrand }), [actions, onSelectBrand]);
 
@@ -34,13 +31,13 @@ export function CatalogSection({ onOpen, brandId, onSelectBrand }: Props) {
         selectedBrand={selectedBrand}
       />
 
-      {view === 'brands' && <BrandPreviewGrid onSelect={onSelectBrand} />}
+      {view === 'brands' && <BrandPreviewGrid onSelect={onSelectBrand} shown={brandsShown} onShowMore={setBrandsShown} />}
 
       {view === 'brand' && selectedBrand && <BrandView brand={selectedBrand} onOpen={onOpen} />}
 
       {view === 'list' &&
         (fragrances.length === 0 ? (
-          <EmptyState brandName={selectedBrand?.name ?? null} onReset={actions.reset} onClearRefinements={actions.clearRefinements} onAllBrands={() => onSelectBrand(null)} />
+          <EmptyState brandName={selectedBrand?.name ?? null} onReset={actions.clearRefinements} onClearRefinements={actions.clearRefinements} onAllBrands={() => onSelectBrand(null)} />
         ) : (
           <ul className="mt-8 rounded-2xl border border-line/70 bg-surface px-4 sm:px-7">
             {fragrances.map((f) => (

@@ -11,8 +11,15 @@ function toggleInSet<T>(set: ReadonlySet<T>, value: T): Set<T> {
   return next;
 }
 
-export function useCatalogFilters() {
-  const [filters, setFilters] = useState<CatalogFilters>(EMPTY_FILTERS);
+type Refinements = Omit<CatalogFilters, 'brandId'>;
+
+/**
+ * Catalogue filter state. The brand is not stored here: it comes straight from the route, so the
+ * view always matches the URL in the same render (no copy that lags a step behind on navigation).
+ */
+export function useCatalogFilters(brandId: string | null) {
+  const [refinements, setFilters] = useState<Refinements>(EMPTY_FILTERS);
+  const filters = useMemo<CatalogFilters>(() => ({ ...refinements, brandId }), [refinements, brandId]);
   const debouncedQuery = useDebouncedValue(filters.query);
 
   const effective = useMemo(() => ({ ...filters, query: debouncedQuery }), [filters, debouncedQuery]);
@@ -26,9 +33,7 @@ export function useCatalogFilters() {
   const setSort = useCallback((sort: SortMode) => setFilters((f) => ({ ...f, sort })), []);
   const toggleGender = useCallback((g: Gender) => setFilters((f) => ({ ...f, genders: toggleInSet(f.genders, g) })), []);
   const togglePrice = useCallback((p: number) => setFilters((f) => ({ ...f, prices: toggleInSet(f.prices, p) })), []);
-  const selectBrand = useCallback((brandId: string | null) => setFilters((f) => ({ ...f, brandId })), []);
-  const clearRefinements = useCallback(() => setFilters((f) => ({ ...EMPTY_FILTERS, brandId: f.brandId })), []);
-  const reset = useCallback(() => setFilters(EMPTY_FILTERS), []);
+  const clearRefinements = useCallback(() => setFilters(EMPTY_FILTERS), []);
 
   return {
     filters,
@@ -36,8 +41,9 @@ export function useCatalogFilters() {
     selectedBrand,
     view: resolveView(effective),
     isRefined: hasRefinements(filters),
-    actions: { setQuery, setSort, toggleGender, togglePrice, selectBrand, clearRefinements, reset },
+    actions: { setQuery, setSort, toggleGender, togglePrice, clearRefinements },
   };
 }
 
-export type CatalogActions = ReturnType<typeof useCatalogFilters>['actions'];
+/** Filter actions plus brand navigation, which the caller routes through the URL. */
+export type CatalogActions = ReturnType<typeof useCatalogFilters>['actions'] & { selectBrand: (brandId: string | null) => void };
