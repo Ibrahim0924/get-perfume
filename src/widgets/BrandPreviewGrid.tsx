@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { catalog, GENDERS, getDetails, localPhoto, photoFillsFrame, type Brand, type Gender } from '@/entities/fragrance';
+import { catalog, GENDERS, type Brand, type Gender } from '@/entities/fragrance';
+import { usePhotoSources } from '@/features/photo-upload';
 import { cn } from '@/shared/lib/cn';
 import { plural } from '@/shared/lib/format';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
@@ -49,18 +50,9 @@ function BrandPreviewCard({ brand, onSelect }: { brand: Brand; onSelect: (id: st
       className="group flex h-full w-full touch-manipulation flex-col rounded-2xl border border-line/70 bg-surface p-4 text-left transition-all hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-[0_10px_30px_-15px_color-mix(in_oklab,var(--color-gold)_50%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:p-5"
     >
       <span className="flex gap-2">
-        {preview.map((f) => {
-          const d = getDetails(f.id);
-          return (
-            <span key={f.id} className="photo-frame flex size-16 items-center justify-center overflow-hidden rounded-2xl border border-line/70">
-              <FragranceImage
-                sources={[localPhoto(f.id), d?.image, d?.imageFallback, d?.imageTransparent]}
-                alt=""
-                {...(photoFillsFrame(f.id) ? { fill: true } : { className: 'size-12' })}
-              />
-            </span>
-          );
-        })}
+        {preview.map((f) => (
+          <PreviewPhoto key={f.id} fragranceId={f.id} />
+        ))}
       </span>
       <span className="mt-4 block font-display text-2xl leading-tight text-fg group-hover:text-gold">{brand.name}</span>
       <span className="mt-0.5 block text-xs text-muted">
@@ -76,5 +68,14 @@ function BrandPreviewCard({ brand, onSelect }: { brand: Brand; onSelect: (id: st
         Смотреть бренд <Arrow direction="right" className="size-3.5 transition-transform group-hover:translate-x-1" />
       </span>
     </button>
+  );
+}
+
+function PreviewPhoto({ fragranceId }: { fragranceId: string }) {
+  const { sources, fills } = usePhotoSources(fragranceId);
+  return (
+    <span className="photo-frame flex size-16 items-center justify-center overflow-hidden rounded-2xl border border-line/70">
+      <FragranceImage sources={sources} alt="" {...(fills ? { fill: true } : { className: 'size-12' })} />
+    </span>
   );
 }

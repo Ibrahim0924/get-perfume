@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  catalog, fragranceTitle, GENDER_LABEL, PSEUDO_BRAND_IDS, getDetails, localPhoto, photoFillsFrame, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
+  catalog, fragranceTitle, GENDER_LABEL, PSEUDO_BRAND_IDS, getDetails, tAccord, tLevel, tLongevity, tNote, tOil, tRanked,
   type Fragrance, type Note,
 } from '@/entities/fragrance';
 import { findSimilar } from '@/features/similar';
@@ -9,6 +9,7 @@ import { cn } from '@/shared/lib/cn';
 import { Container } from '@/shared/ui/Container';
 import { WhatsAppButton, WHATSAPP_PHONE_DISPLAY } from '@/shared/ui/WhatsAppButton';
 import { FragranceImage } from '@/shared/ui/FragranceImage';
+import { RestoreOriginalButton, UploadPhotoButton, usePhotoSources } from '@/features/photo-upload';
 import { Arrow } from '@/shared/ui/Arrow';
 
 const STRENGTH_WIDTH: Record<string, string> = { Dominant: '100%', Prominent: '80%', Moderate: '55%', Subtle: '30%' };
@@ -21,6 +22,7 @@ const GENDER_TONE: Record<Fragrance['gender'], string> = {
 export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () => void; onOpen: (f: Fragrance) => void }) {
   const fragrance = catalog.fragrances.find((f) => f.id === id) ?? null;
   const d = fragrance ? getDetails(fragrance.id) : undefined;
+  const photo = usePhotoSources(id);
   const similar = fragrance ? findSimilar(fragrance) : [];
   // Without accord data there is nothing to match on; fall back to the brand (then same gender & price)
   // so the page never ends in a dead end.
@@ -38,7 +40,7 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
           };
         })()
       : { title: '', note: '', items: [] };
-  const hasPhoto = Boolean(fragrance && (localPhoto(fragrance.id) || d?.image || d?.imageFallback || d?.imageTransparent));
+  const hasPhoto = photo.sources.some(Boolean);
 
   useEffect(() => {
     document.title = fragrance ? `${fragrance.name}${PSEUDO_BRAND_IDS.has(fragrance.brandId) ? '' : ` — ${fragrance.brand}`} · GerParfume` : 'GerParfume';
@@ -68,23 +70,22 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
             // A photo with its own backdrop gets a frame of its own (square) shape and fills it edge to edge.
             <div
               className={cn(
-                'photo-frame flex items-center justify-center overflow-hidden rounded-3xl border border-line',
-                photoFillsFrame(fragrance.id) ? 'aspect-square' : 'aspect-[5/4] p-6 md:aspect-[4/5]',
+                'photo-frame relative flex items-center justify-center overflow-hidden rounded-3xl border border-line',
+                photo.fills ? 'aspect-square' : 'aspect-[5/4] p-6 md:aspect-[4/5]',
               )}
             >
-              <FragranceImage
-                sources={[localPhoto(fragrance.id), d?.image, d?.imageFallback, d?.imageTransparent]}
-                alt={fragrance.name}
-                {...(photoFillsFrame(fragrance.id) ? { fill: true } : { className: 'max-h-full max-w-full' })}
-              />
+              <FragranceImage sources={photo.sources} alt={fragrance.name} {...(photo.fills ? { fill: true } : { className: 'max-h-full max-w-full' })} />
+              <UploadPhotoButton fragranceId={fragrance.id} corner="bottom-right" />
             </div>
           ) : (
             // No reference photo at all: a compact placeholder instead of a screen-tall empty frame.
-            <div className="flex h-32 items-center justify-center gap-3 rounded-3xl border border-dashed border-line text-muted md:h-40">
+            <div className="relative flex h-32 items-center justify-center gap-3 rounded-3xl border border-dashed border-line text-muted md:h-40">
               <FragranceImage sources={[]} alt="" className="size-12" />
               <span className="text-sm">Фото флакона пока нет</span>
+              <UploadPhotoButton fragranceId={fragrance.id} corner="bottom-right" />
             </div>
           )}
+          <RestoreOriginalButton fragranceId={fragrance.id} />
           <figcaption className="flex items-start gap-2 text-[11px] leading-snug text-muted">
             <span aria-hidden="true" className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-current text-[9px] font-bold">i</span>
             {hasPhoto
@@ -212,14 +213,10 @@ export function FragrancePage({ id, onBack, onOpen }: { id: string; onBack: () =
 }
 
 function SimilarThumb({ id, name }: { id: string; name: string }) {
-  const d = getDetails(id);
+  const photo = usePhotoSources(id);
   return (
-    <span className={cn('photo-frame flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-line/70', !photoFillsFrame(id) && 'p-2')}>
-      <FragranceImage
-        sources={[localPhoto(id), d?.image, d?.imageFallback, d?.imageTransparent]}
-        alt={name}
-        {...(photoFillsFrame(id) ? { fill: true } : { className: 'max-h-full max-w-full' })}
-      />
+    <span className={cn('photo-frame flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-line/70', !photo.fills && 'p-2')}>
+      <FragranceImage sources={photo.sources} alt={name} {...(photo.fills ? { fill: true } : { className: 'max-h-full max-w-full' })} />
     </span>
   );
 }

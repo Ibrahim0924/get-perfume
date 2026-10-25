@@ -1,5 +1,6 @@
 import { strToU8, zipSync, type Zippable } from 'fflate';
-import { fragranceTitle, GENDER_LABEL, getDetails, localPhoto, type Fragrance } from '@/entities/fragrance';
+import { fragranceTitle, GENDER_LABEL, type Fragrance } from '@/entities/fragrance';
+import { photoSources } from '@/features/photo-upload';
 
 /** Characters Windows and macOS do not allow in file names. */
 const safeName = (s: string) => s.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -7,10 +8,9 @@ const safeName = (s: string) => s.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g,
 const extensionOf = (url: string, type: string) =>
   type.includes('png') ? 'png' : type.includes('jpeg') ? 'jpg' : type.includes('webp') ? 'webp' : (url.split('?')[0]!.split('.').pop() ?? 'jpg');
 
-/** First photo of the fragrance that can actually be downloaded (local copy first, then the remote ones). */
+/** First photo of the fragrance that can actually be downloaded (uploaded one, our copy, then the remote ones). */
 async function fetchPhoto(f: Fragrance): Promise<{ bytes: Uint8Array; ext: string } | null> {
-  const d = getDetails(f.id);
-  for (const url of [localPhoto(f.id), d?.image, d?.imageFallback, d?.imageTransparent]) {
+  for (const url of photoSources(f.id).sources) {
     if (!url) continue;
     try {
       const res = await fetch(url);

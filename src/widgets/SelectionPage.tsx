@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
-import { catalog, getDetails, localPhoto, photoFillsFrame, type Fragrance } from '@/entities/fragrance';
+import { catalog, type Fragrance } from '@/entities/fragrance';
 import { EMPTY_FILTERS, filterFragrances } from '@/features/catalog';
+import { UploadPhotoButton, usePhotoSources } from '@/features/photo-upload';
 import { buildSelectionZip, useSelection } from '@/features/selection';
 import { cn } from '@/shared/lib/cn';
 import { plural } from '@/shared/lib/format';
@@ -160,10 +161,10 @@ export function SelectionPage({ onBack }: { onBack: () => void }) {
 }
 
 function SelectableCard({ fragrance: f, checked, onToggle }: { fragrance: Fragrance; checked: boolean; onToggle: () => void }) {
-  const d = getDetails(f.id);
-  const fills = photoFillsFrame(f.id);
+  const { sources, fills } = usePhotoSources(f.id);
   return (
-    <li>
+    // The upload button sits next to (not inside) the card's own button: buttons cannot nest.
+    <li className="relative">
       <button
         type="button"
         role="checkbox"
@@ -175,11 +176,7 @@ function SelectableCard({ fragrance: f, checked, onToggle }: { fragrance: Fragra
         )}
       >
         <span className={cn('photo-frame flex aspect-square items-center justify-center overflow-hidden', !fills && 'p-3')}>
-          <FragranceImage
-            sources={[localPhoto(f.id), d?.image, d?.imageFallback, d?.imageTransparent]}
-            alt=""
-            {...(fills ? { fill: true } : { className: 'max-h-full max-w-full' })}
-          />
+          <FragranceImage sources={sources} alt="" {...(fills ? { fill: true } : { className: 'max-h-full max-w-full' })} />
         </span>
         <span
           aria-hidden="true"
@@ -197,6 +194,7 @@ function SelectableCard({ fragrance: f, checked, onToggle }: { fragrance: Fragra
           <span className="text-sm leading-snug font-medium text-fg">{f.name}</span>
         </span>
       </button>
+      <UploadPhotoButton fragranceId={f.id} corner="top-left" />
     </li>
   );
 }

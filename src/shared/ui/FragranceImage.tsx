@@ -16,6 +16,14 @@ export function FragranceImage({ sources, alt, className, fill }: Props) {
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
   const urls = sources.filter((s): s is string => Boolean(s));
+  // A new list (e.g. an uploaded photo arrived) starts over from its first candidate.
+  const urlsKey = urls.join('\n');
+  const [stageFor, setStageFor] = useState(urlsKey);
+  if (stageFor !== urlsKey) {
+    setStageFor(urlsKey);
+    setStage(0);
+    setLoaded(false);
+  }
   const url = urls[stage] ?? null;
 
   // Cached images may complete before React attaches onLoad.
