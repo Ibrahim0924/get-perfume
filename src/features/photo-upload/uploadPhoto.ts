@@ -1,9 +1,8 @@
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/shared/config/supabase';
+import { SUPABASE_URL, supabaseHeaders } from '@/shared/config/supabase';
 import { originalPath, publicPhotoUrl, rememberUpload } from './uploadedPhotos';
 
 const MAX_SIDE = 1200;
 const MAX_INPUT_BYTES = 15 * 1024 * 1024;
-const HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
 
 /**
  * Redraws the picture at most 1200px on its longer side as JPEG. Keeps uploads small and drops
@@ -35,7 +34,7 @@ export async function uploadPhoto(fragranceId: string, file: File): Promise<void
 
   const put = await fetch(`${SUPABASE_URL}/storage/v1/object/photos/${encodeURI(path)}`, {
     method: 'POST',
-    headers: { ...HEADERS, 'Content-Type': 'image/jpeg', 'x-upsert': 'false' },
+    headers: { ...supabaseHeaders, 'Content-Type': 'image/jpeg', 'x-upsert': 'false' },
     body: blob,
   });
   if (!put.ok) throw new Error('Не удалось загрузить фото.');
@@ -54,7 +53,7 @@ export async function restoreOriginal(fragranceId: string): Promise<void> {
 async function addRow(fragranceId: string, path: string): Promise<boolean> {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/photo_overrides`, {
     method: 'POST',
-    headers: { ...HEADERS, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+    headers: { ...supabaseHeaders, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
     body: JSON.stringify({ fragrance_id: fragranceId, path }),
   });
   return res.ok;

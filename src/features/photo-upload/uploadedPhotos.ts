@@ -1,8 +1,7 @@
 import { useSyncExternalStore } from 'react';
-import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseEnabled } from '@/shared/config/supabase';
+import { SUPABASE_URL, supabaseEnabled, supabaseHeaders } from '@/shared/config/supabase';
 
 const BUCKET = 'photos';
-const HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
 
 export const publicPhotoUrl = (path: string) => `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${encodeURI(path)}`;
 
@@ -17,7 +16,7 @@ const emit = () => listeners.forEach((l) => l());
 
 async function load() {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/photo_overrides?select=fragrance_id,path&order=created_at.desc`, { headers: HEADERS });
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/photo_overrides?select=fragrance_id,path&order=created_at.desc`, { headers: supabaseHeaders });
     if (!res.ok) return;
     const rows = (await res.json()) as { fragrance_id: string; path: string }[];
     const next = new Map<string, string | null>();
